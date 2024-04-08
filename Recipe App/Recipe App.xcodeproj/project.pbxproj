@@ -11,6 +11,7 @@
 		2A4CE8CB2BC46C510076F3BB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4CE8CA2BC46C510076F3BB /* ContentView.swift */; };
 		2A4CE8CD2BC46C520076F3BB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A4CE8CC2BC46C520076F3BB /* Assets.xcassets */; };
 		2A4CE8D02BC46C520076F3BB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A4CE8CF2BC46C520076F3BB /* Preview Assets.xcassets */; };
+		2AF1CD892BC46DFB00B022E9 /* RecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		2A4CE8CA2BC46C510076F3BB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2A4CE8CC2BC46C520076F3BB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A4CE8CF2BC46C520076F3BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 				2A4CE8CA2BC46C510076F3BB /* ContentView.swift */,
 				2A4CE8CC2BC46C520076F3BB /* Assets.xcassets */,
 				2A4CE8CE2BC46C520076F3BB /* Preview Content */,
+				2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */,
 			);
 			path = "Recipe App";
 			sourceTree = "<group>";
@@ -137,6 +140,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AF1CD892BC46DFB00B022E9 /* RecipeView.swift in Sources */,
 				2A4CE8CB2BC46C510076F3BB /* ContentView.swift in Sources */,
 				2A4CE8C92BC46C510076F3BB /* Recipe_AppApp.swift in Sources */,
 			);
