@@ -28,9 +28,7 @@ struct RecipesView: View {
         }
         .navigationBarTitle("App Name", displayMode: .inline)
         .navigationBarItems(
-            leading: Button(action: {
-                // Action for adding a new recipe
-            }) {
+            leading: NavigationLink(destination: AddRecipeView()) {
                 Image(systemName: "plus")
             },
             trailing: Button(action: {
