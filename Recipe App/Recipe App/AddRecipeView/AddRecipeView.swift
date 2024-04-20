@@ -57,7 +57,7 @@ struct AddRecipeView: View {
                 }
                 Section(header: Text("Ingredients")){
                     ForEach(addingredients.indices, id: \.self) { index in
-                        Text("Step \(index + 1)") // 显示步骤的标题
+                        Text("Ingredient \(index + 1)")
                         TextEditor(text:$addingredients[index])
                     }
                     Button(action: {
@@ -68,8 +68,8 @@ struct AddRecipeView: View {
                 }
                 Section(header: Text("Directions")) {
                     ForEach(procedures.indices, id:\.self) { index in
-                        Text("Step \(index + 1)") // 显示步骤的标题
-                        TextEditor(text: $procedures[index]) // 输入步骤的文本框
+                        Text("Step \(index + 1)")
+                        TextEditor(text: $procedures[index])
                     }
                     Button(action: {
                         addProcedure()
@@ -106,17 +106,16 @@ struct AddRecipeView: View {
             }
         }
     }
-    // 添加步骤的方法
+    
     private func addProcedure() {
-        procedures.append("")// 添加一个空字符串作为新步骤的初始值
+        procedures.append("")
     }
     private func addIngredient() {
-        addingredients.append("")// 添加一个空字符串作为新步骤的初始值
+        addingredients.append("")
     }
 }
-struct ContentView_Previews: PreviewProvider {
+struct AddRecipeView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
-        
+        AddRecipeView()
     }
 }
