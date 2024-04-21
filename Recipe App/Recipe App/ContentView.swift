@@ -8,13 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var authModel: AuthModel = AuthModel()
+    
     var body: some View {
         NavigationView {
-            RecipesView(recipes: RecipesDummyData.recipes)
+            if authModel.isSignedIn {
+                RecipesView(recipes: RecipesDummyData.recipes)
+            } else {
+                LoginView(authModel: authModel)
+            }
         }
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
