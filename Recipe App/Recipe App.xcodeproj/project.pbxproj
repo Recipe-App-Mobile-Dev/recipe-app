@@ -157,6 +157,8 @@
 				EB299D4D2BD2DF5B00794100 /* SignUpViewModel.swift */,
 			);
 			path = SignUpView;
+			sourceTree = "<group>";
+		};
 		B9DC379C2BD15CA200A13D8E /* AddRecipeView */ = {
 			isa = PBXGroup;
 			children = (
