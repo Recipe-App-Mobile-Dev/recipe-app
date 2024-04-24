@@ -26,6 +26,7 @@ struct CustomTextField: View {
             } else {
                 TextField(placeHolder, text: $text)
                     .keyboardType(keyboardType)
+                    .autocapitalization(.none)
                     .textFieldStyle(MyTextFieldStyle())
             }
         }

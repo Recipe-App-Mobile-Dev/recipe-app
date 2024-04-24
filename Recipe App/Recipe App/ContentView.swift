@@ -13,7 +13,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             if authModel.isSignedIn {
-                RecipesView(recipes: RecipesDummyData.recipes)
+                RecipesView(recipes: RecipesDummyData.recipes, authModel: authModel)
             } else {
                 LoginView(authModel: authModel)
             }
