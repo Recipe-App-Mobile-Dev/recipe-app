@@ -10,9 +10,11 @@ import Foundation
 
 struct RecipesView: View {
     @ObservedObject var viewModel: RecipesViewModel
+    var authModel: AuthModel
 
-    init(recipes: [RecipeModel]) {
+    init(recipes: [RecipeModel], authModel: AuthModel) {
         viewModel = RecipesViewModel(recipes: recipes)
+        self.authModel = authModel
     }
 
     var body: some View {
@@ -25,6 +27,9 @@ struct RecipesView: View {
                 }
             }
             .padding()
+            Button("Log Out") {
+                authModel.signOut()
+           }
         }
         .navigationBarTitle("App Name", displayMode: .inline)
         .navigationBarItems(
@@ -52,6 +57,6 @@ struct LazyView<Content: View>: View {
 
 struct RecipesView_Previews: PreviewProvider {
     static var previews: some View {
-        RecipesView(recipes: RecipesDummyData.recipes)
+        RecipesView(recipes: RecipesDummyData.recipes, authModel: AuthModel())
     }
 }
