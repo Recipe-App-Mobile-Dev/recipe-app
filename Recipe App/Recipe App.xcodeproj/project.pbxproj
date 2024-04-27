@@ -18,6 +18,7 @@
 		2A4CE8CD2BC46C520076F3BB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A4CE8CC2BC46C520076F3BB /* Assets.xcassets */; };
 		2A4CE8D02BC46C520076F3BB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A4CE8CF2BC46C520076F3BB /* Preview Assets.xcassets */; };
 		2A777D8A2BDCFF0C00FC779C /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A777D892BDCFF0C00FC779C /* ButtonView.swift */; };
+		2AA4F88C2BDD0BCB00F8BC98 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2AA4F88B2BDD0BCB00F8BC98 /* GoogleService-Info.plist */; };
 		2ABF4CD92BDD0183003350F1 /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABF4CD82BDD0183003350F1 /* FirestoreManager.swift */; };
 		2AF1CD892BC46DFB00B022E9 /* RecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */; };
 		B9DC379E2BD15CCA00A13D8E /* AddRecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DC379D2BD15CCA00A13D8E /* AddRecipeView.swift */; };
@@ -53,6 +54,7 @@
 		2A4CE8CC2BC46C520076F3BB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A4CE8CF2BC46C520076F3BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2A777D892BDCFF0C00FC779C /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
+		2AA4F88B2BDD0BCB00F8BC98 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2ABF4CD82BDD0183003350F1 /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
 		2ABF4CDA2BDD0484003350F1 /* Recipe-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Recipe-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeView.swift; sourceTree = "<group>"; };
@@ -64,7 +66,6 @@
 		EB299D482BD2DB6600794100 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		EB299D4A2BD2DD4400794100 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		EB299D4D2BD2DF5B00794100 /* SignUpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewModel.swift; sourceTree = "<group>"; };
-		EB44BDFB2BD980C200DC26BB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		EBB08E1F2BDC732700A823B1 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		EBB08E222BDC739900A823B1 /* UserProfileRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileRepository.swift; sourceTree = "<group>"; };
 		EBFDE7AC2BCF349B0004B18B /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
@@ -115,6 +116,7 @@
 		2A4CE8BC2BC46C510076F3BB = {
 			isa = PBXGroup;
 			children = (
+				2AA4F88B2BDD0BCB00F8BC98 /* GoogleService-Info.plist */,
 				2A4CE8C72BC46C510076F3BB /* Recipe App */,
 				2A4CE8C62BC46C510076F3BB /* Products */,
 			);
@@ -133,7 +135,6 @@
 			children = (
 				2ABF4CDA2BDD0484003350F1 /* Recipe-App-Info.plist */,
 				EBB08E212BDC738500A823B1 /* Repository */,
-				EB44BDFB2BD980C200DC26BB /* GoogleService-Info.plist */,
 				EB299D4C2BD2DEDB00794100 /* SignUpView */,
 				EB299D472BD2DB2700794100 /* SharedView */,
 				EB299D402BD2C83500794100 /* LoginView */,
@@ -278,6 +279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A4CE8D02BC46C520076F3BB /* Preview Assets.xcassets in Resources */,
+				2AA4F88C2BDD0BCB00F8BC98 /* GoogleService-Info.plist in Resources */,
 				2A4CE8CD2BC46C520076F3BB /* Assets.xcassets in Resources */,
 				EB44BDFA2BD980B200DC26BB /* (null) in Resources */,
 			);

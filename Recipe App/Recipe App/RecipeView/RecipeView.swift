@@ -10,9 +10,11 @@ import SwiftUI
 
 struct RecipeView: View {
     @ObservedObject var viewModel: RecipeViewModel
+    @ObservedObject var authModel: AuthModel
     
-    init(recipe: RecipeModel) {
+    init(recipe: RecipeModel, auth: AuthModel) {
         viewModel = RecipeViewModel(recipe: recipe)
+        authModel = auth
     }
     
     var body: some View {
@@ -56,14 +58,17 @@ struct RecipeView: View {
                     }
                 }
                 .padding()
-                
-                HStack {
-                    ButtonView(text: "Edit", color: Color.green)
-                        .padding(.horizontal, 5.0)
-                    ButtonView(text: "Delete", color: Color.red)
-                        .padding(.horizontal, 5.0)
+
+                if let userId = authModel.profile?.uid,
+                   userId == viewModel.recipe.userId {
+                    HStack {
+                        ButtonView(text: "Edit", color: Color.green)
+                            .padding(.horizontal, 5.0)
+                        ButtonView(text: "Delete", color: Color.red)
+                            .padding(.horizontal, 5.0)
+                    }
+                    .padding()
                 }
-                .padding()
             }
         }
         .navigationTitle(viewModel.recipe.recipeName)
@@ -71,5 +76,5 @@ struct RecipeView: View {
 }
 
 #Preview {
-    RecipeView(recipe: RecipesDummyData.ToastRecipe)
+    RecipeView(recipe: RecipesDummyData.ToastRecipe, auth: AuthModel())
 }

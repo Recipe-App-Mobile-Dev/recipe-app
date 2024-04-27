@@ -9,7 +9,7 @@ import Foundation
 
 class RecipesDummyData {
     public static var ToastRecipe: RecipeModel = RecipeModel(
-        userId: "1",
+        userId: "8t4KSPZAvzclXoCzBpOQZifge0m2",
         recipeName: "Tomato Toast",
         imageName: "toasts",
         recipeDescription: "So simple. It's just toast, spread with cheese, topped with sliced fresh garden tomatoes, and sprinkled with coarse salt and freshly ground black pepper.",

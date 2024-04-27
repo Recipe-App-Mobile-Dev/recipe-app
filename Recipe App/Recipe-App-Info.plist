@@ -8,9 +8,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>REVERSE_CLIENT_ID</string>
-			</array>
+			<array/>
 		</dict>
 	</array>
 </dict>

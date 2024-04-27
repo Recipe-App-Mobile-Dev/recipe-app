@@ -24,6 +24,20 @@ class AuthModel: ObservableObject {
         Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
                 self?.isSignedIn = user != nil
+                
+                guard let user = user else { return }
+                print("User \(user.uid) signed in.")
+                
+                if let auth = self {
+                    self?.profileRepository.fetchProfile(userId: user.uid) { (profile, error) in
+                        if let error = error {
+                            print("Error while fetching the user profile: \(error)")
+                            return
+                        }
+                        self?.profile = profile
+                        self?.isSignedIn = true
+                    }
+                }
             }
         }
     }
