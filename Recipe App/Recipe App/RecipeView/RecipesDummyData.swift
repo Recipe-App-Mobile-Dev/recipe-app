@@ -9,6 +9,7 @@ import Foundation
 
 class RecipesDummyData {
     public static var ToastRecipe: RecipeModel = RecipeModel(
+        userId: "1",
         recipeName: "Tomato Toast",
         imageName: "toasts",
         recipeDescription: "So simple. It's just toast, spread with cheese, topped with sliced fresh garden tomatoes, and sprinkled with coarse salt and freshly ground black pepper.",
@@ -37,6 +38,7 @@ class RecipesDummyData {
     )
     
     public static var SmoothieRecipe: RecipeModel = RecipeModel(
+         userId: "1",
          recipeName: "Green Smoothie",
          imageName: "smoothie",
          recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
@@ -60,6 +62,7 @@ class RecipesDummyData {
      )
 
      public static var SaladRecipe: RecipeModel = RecipeModel(
+         userId: "2",
          recipeName: "Pasta Salad",
          imageName: "pastasalad",
          recipeDescription: "A tasty pasta salad packed with cucumbers, tomatoes, and a light vinaigrette. Perfect for picnics or a quick lunch.",

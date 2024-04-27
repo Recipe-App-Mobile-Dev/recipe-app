@@ -56,6 +56,14 @@ struct RecipeView: View {
                     }
                 }
                 .padding()
+                
+                HStack {
+                    ButtonView(text: "Edit", color: Color.green)
+                        .padding(.horizontal, 5.0)
+                    ButtonView(text: "Delete", color: Color.red)
+                        .padding(.horizontal, 5.0)
+                }
+                .padding()
             }
         }
         .navigationTitle(viewModel.recipe.recipeName)

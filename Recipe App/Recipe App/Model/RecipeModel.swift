@@ -9,6 +9,7 @@ import Foundation
 
 struct RecipeModel: Identifiable {
     let id = UUID()
+    let userId: String
     let recipeName: String
     let imageName: String
     let recipeDescription: String?
