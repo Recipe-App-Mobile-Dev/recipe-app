@@ -38,7 +38,7 @@ class RecipesDummyData {
     )
     
     public static var SmoothieRecipe: RecipeModel = RecipeModel(
-         userId: "1",
+         userId: "X0TPP4gkuPQCbPvnxE6GZXy4gh02",
          recipeName: "Green Smoothie",
          imageName: "smoothie",
          recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
@@ -62,7 +62,7 @@ class RecipesDummyData {
      )
 
      public static var SaladRecipe: RecipeModel = RecipeModel(
-         userId: "2",
+         userId: "CZpkmBv7HqNpisSOMo6VLqiP0Us2",
          recipeName: "Pasta Salad",
          imageName: "pastasalad",
          recipeDescription: "A tasty pasta salad packed with cucumbers, tomatoes, and a light vinaigrette. Perfect for picnics or a quick lunch.",
