@@ -74,11 +74,11 @@ struct RecipeView: View {
             }
             .navigationTitle(fetchedRecipe.recipeName)
         } else {
-            Text("Error Screen")
+            Label("Loading", systemImage: "hourglass")
         }
     }
 }
 
 #Preview {
-    RecipeView(recipeId: "8t4KSPZAvzclXoCzBpOQZifge0m2"/*RecipesDummyData.ToastRecipe*/, auth: AuthModel())
+    RecipeView(recipeId: "8t4KSPZAvzclXoCzBpOQZifge0m2", auth: AuthModel())
 }

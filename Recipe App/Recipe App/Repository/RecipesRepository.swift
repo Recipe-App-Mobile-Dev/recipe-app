@@ -20,10 +20,17 @@ class RecipesRepository: ObservableObject {
                 return
             }
             
-            print("1")
             if let data = document?.data() {
+                
+                let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
                 var steps: [RecipeModel.Step]? = []
+                
+                dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
                 self.fetchSteps(recipeId: id) { (recipeSteps, error) in
+                    defer {
+                        dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                    }
+                    
                     if let error = error {
                         print("Error while fetching the recipe ingredient: \(error)")
                         return
@@ -32,36 +39,35 @@ class RecipesRepository: ObservableObject {
                 }
                 
                 var ingredients: [RecipeModel.RecipeIngridient]?
+                dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
                 self.fetchRecipeIngredients(recipeId: id) { (recipeIngredients, error) in
+                    defer {
+                        dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                    }
+                    
                     if let error = error {
                         print("Error while fetching the recipe ingredient: \(error)")
                         return
                     }
-                    
-                    print("3")
-                    print(recipeIngredients)
                     ingredients = recipeIngredients
-                    print(ingredients)
                 }
                 
-                if let ingredients = ingredients {
-                    
-                    print("41")
+                // Notify when all asynchronous calls inside the DispatchGroup have completed
+                dispatchGroup.notify(queue: .main) {
+                    if let ingredients = ingredients, let steps = steps {
+                        let recipe = RecipeModel(
+                            id: document?.documentID as? String ?? "",
+                            userId: data["userId"] as? String ?? "",
+                            recipeName: data["recipeName"] as? String ?? "",
+                            imageName: data["imageName"] as? String ?? "",
+                            recipeDescription: data["recipeDescription"] as? String ?? "",
+                            ingredients: ingredients,
+                            steps: steps
+                        )
+                        completion(recipe, nil)
+                    }
                 }
-                
-                if let ingredients = ingredients, let steps = steps {
-                    print("4")
-                    let recipe = RecipeModel(
-                        id: document?.documentID as? String ?? "",
-                        userId: data["userId"] as? String ?? "",
-                        recipeName: data["recipeName"] as? String ?? "",
-                        imageName: data["imageName"] as? String ?? "",
-                        recipeDescription: data["recipeDescription"] as? String ?? "",
-                        ingredients: ingredients,
-                        steps: steps
-                    )
-                    completion(recipe, nil)
-                }
+
             }
             completion(nil, error)
         }
@@ -97,37 +103,39 @@ class RecipesRepository: ObservableObject {
                 return
             }
             
-            print("5")
             var ingredientArray: [RecipeModel.RecipeIngridient] = []
+            
+            let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
             
             for document in querySnapshot!.documents {
                 if let ingredientId = document["ingredient"] as? String ?? nil {
+                    dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
                     self.fetchIngrediets(ingredientId: ingredientId) { (ingredient, error) in
+                        defer {
+                            dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                        }
+                        
                         if let error = error {
                             print("Error while fetching the ingredient: \(error)")
                             return
                         }
                         
-                        print("7")
-                        print(ingredient)
                         if let ingredient = ingredient {
-                            print("8")
                             let recipeIngredient = RecipeModel.RecipeIngridient(
                                 ingredient: ingredient,
                                 quantity: document["quantity"] as? String ?? ""
                             )
                             
-                            print(recipeIngredient)
                             ingredientArray.append(recipeIngredient)
                         }
                     }
                 }
             }
             
-            let recipeIngredients = ingredientArray
-            print("6")
-            print(recipeIngredients)
-            completion(recipeIngredients, error)
+            // Notify when all asynchronous calls inside the DispatchGroup have completed
+            dispatchGroup.notify(queue: .main) {
+                completion(ingredientArray, error)
+            }
         }
     }
     
