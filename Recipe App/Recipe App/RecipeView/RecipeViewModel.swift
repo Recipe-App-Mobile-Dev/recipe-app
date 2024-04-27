@@ -8,10 +8,17 @@
 import Foundation
 
 class RecipeViewModel: ObservableObject {
-    @Published var recipe: RecipeModel
+    @Published var recipe: RecipeModel?
+    private var recipesRepository = RecipesRepository()
     
-    init(recipe: RecipeModel) {
-        self.recipe = recipe
+    init(recipeId: String) {
+        recipesRepository.fetchRecipe(id: recipeId) { (recipe, error) in
+            if let error = error {
+                print("Error while fetching the recipe: \(error)")
+                return
+            }
+            self.recipe = recipe
+        }
     }
     
     // func editRecipe

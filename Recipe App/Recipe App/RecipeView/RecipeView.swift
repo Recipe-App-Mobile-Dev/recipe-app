@@ -12,69 +12,73 @@ struct RecipeView: View {
     @ObservedObject var viewModel: RecipeViewModel
     @ObservedObject var authModel: AuthModel
     
-    init(recipe: RecipeModel, auth: AuthModel) {
-        viewModel = RecipeViewModel(recipe: recipe)
+    init(recipeId: String, auth: AuthModel) {
+        viewModel = RecipeViewModel(recipeId: recipeId)
         authModel = auth
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                Image(viewModel.recipe.imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: geometry.size.width - 40, height: 300)
-                    .cornerRadius(10)
-                    .padding()
-                
-                if let recipeDescription = viewModel.recipe.recipeDescription {
-                    Text(recipeDescription)
-                        .foregroundColor(Color(.darkGray))
+        if let fetchedRecipe = viewModel.recipe {
+            GeometryReader { geometry in
+                ScrollView {
+                    Image(fetchedRecipe.imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width - 40, height: 300)
+                        .cornerRadius(10)
                         .padding()
-                }
-                
-                VStack {
-                    Text("Ingredients")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.title2)
-                        .padding(.bottom, 10.0)
                     
-                    ForEach(Array(viewModel.recipe.ingredients), id: \.key.id) { ingredient, quantity in
-                        IngredientView(ingredient: ingredient, quantity: quantity)
-                            .padding(.vertical, 3.0)
+                    if let recipeDescription = fetchedRecipe.recipeDescription {
+                        Text(recipeDescription)
+                            .foregroundColor(Color(.darkGray))
+                            .padding()
                     }
-                }
-                .padding()
-                
-                VStack {
-                    Text("Procedures")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.title2)
-                        .padding(.bottom, 10.0)
                     
-                    ForEach(viewModel.recipe.steps, id: \.stepNumber) { step in
-                        StepView(step: step)
+                    VStack {
+                        Text("Ingredients")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.title2)
                             .padding(.bottom, 10.0)
-                    }
-                }
-                .padding()
-
-                if let userId = authModel.profile?.uid,
-                   userId == viewModel.recipe.userId {
-                    HStack {
-                        ButtonView(text: "Edit", color: Color.green)
-                            .padding(.horizontal, 5.0)
-                        ButtonView(text: "Delete", color: Color.red)
-                            .padding(.horizontal, 5.0)
+                        
+                        ForEach(Array(fetchedRecipe.ingredients), id: \.ingredient.id) { recipeIngredient in
+                            IngredientView(ingredient: recipeIngredient.ingredient, quantity: recipeIngredient.quantity)
+                                .padding(.vertical, 3.0)
+                        }
                     }
                     .padding()
+                    
+                    VStack {
+                        Text("Procedures")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.title2)
+                            .padding(.bottom, 10.0)
+                        
+                        ForEach(fetchedRecipe.steps, id: \.stepNumber) { step in
+                            StepView(step: step)
+                                .padding(.bottom, 10.0)
+                        }
+                    }
+                    .padding()
+
+                    if let userId = authModel.profile?.uid,
+                       userId == fetchedRecipe.userId {
+                        HStack {
+                            ButtonView(text: "Edit", color: Color.green)
+                                .padding(.horizontal, 5.0)
+                            ButtonView(text: "Delete", color: Color.red)
+                                .padding(.horizontal, 5.0)
+                        }
+                        .padding()
+                    }
                 }
             }
+            .navigationTitle(fetchedRecipe.recipeName)
+        } else {
+            Text("Error Screen")
         }
-        .navigationTitle(viewModel.recipe.recipeName)
     }
 }
 
 #Preview {
-    RecipeView(recipe: RecipesDummyData.ToastRecipe, auth: AuthModel())
+    RecipeView(recipeId: "8t4KSPZAvzclXoCzBpOQZifge0m2"/*RecipesDummyData.ToastRecipe*/, auth: AuthModel())
 }

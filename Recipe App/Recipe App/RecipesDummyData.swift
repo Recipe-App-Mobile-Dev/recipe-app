@@ -9,14 +9,24 @@ import Foundation
 
 class RecipesDummyData {
     public static var ToastRecipe: RecipeModel = RecipeModel(
+        id: "kIBFyJd7Rotf5bXJt18A",
         userId: "8t4KSPZAvzclXoCzBpOQZifge0m2",
         recipeName: "Tomato Toast",
         imageName: "toasts",
         recipeDescription: "So simple. It's just toast, spread with cheese, topped with sliced fresh garden tomatoes, and sprinkled with coarse salt and freshly ground black pepper.",
         ingredients: [
-            Ingredient(ingredientName: "Tomatoes", imageName: "Tomato"): "500g",
-            Ingredient(ingredientName: "Bread", imageName: "bread"): "2 pieces",
-            Ingredient(ingredientName: "Soft cheese", imageName: "softcheese"): "2 tsp"
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Tomatoes", imageName: "Tomato"),
+                quantity: "500g"
+            ),
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Bread", imageName: "bread"),
+                quantity: "2 pieces"
+            ),
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Soft cheese", imageName: "softcheese"),
+                quantity: "2 tsp"
+            )
         ],
         steps: [
             RecipeModel.Step(
@@ -38,14 +48,24 @@ class RecipesDummyData {
     )
     
     public static var SmoothieRecipe: RecipeModel = RecipeModel(
+         id: "kIBFyJd7Rotf5bXJt18A",
          userId: "X0TPP4gkuPQCbPvnxE6GZXy4gh02",
          recipeName: "Green Smoothie",
          imageName: "smoothie",
          recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
          ingredients: [
-             Ingredient(ingredientName: "Banana", imageName: "banana"): "1 whole",
-             Ingredient(ingredientName: "Pineapple", imageName: "pineapple"): "1 cup",
-             Ingredient(ingredientName: "Coconut water", imageName: "coconutwater"): "1 cup"
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Banana", imageName: "banana"),
+                quantity: "1 whole"
+            ),
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Pineapple", imageName: "pineapple"),
+                quantity: "1 cup"
+            ),
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Coconut water", imageName: "coconutwater"),
+                quantity: "1 cup"
+            )
          ],
          steps: [
              RecipeModel.Step(
@@ -62,15 +82,28 @@ class RecipesDummyData {
      )
 
      public static var SaladRecipe: RecipeModel = RecipeModel(
+         id: "kIBFyJd7Rotf5bXJt18A",
          userId: "CZpkmBv7HqNpisSOMo6VLqiP0Us2",
          recipeName: "Pasta Salad",
          imageName: "pastasalad",
          recipeDescription: "A tasty pasta salad packed with cucumbers, tomatoes, and a light vinaigrette. Perfect for picnics or a quick lunch.",
          ingredients: [
-             Ingredient(ingredientName: "Pasta", imageName: "pasta"): "200g",
-             Ingredient(ingredientName: "Cucumbers", imageName: "cucumber"): "1 whole",
-             Ingredient(ingredientName: "Tomatoes", imageName: "Tomato"): "200g",
-             Ingredient(ingredientName: "Vinaigrette", imageName: "vinaigrette"): "3 tbsp"
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Pasta", imageName: "pasta"),
+                quantity: "200g"
+            ),
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Cucumbers", imageName: "cucumber"),
+                quantity: "1 whole"
+            ),
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Tomatoes", imageName: "Tomato"),
+                quantity: "200g"
+            ),
+            RecipeModel.RecipeIngridient(
+                ingredient: Ingredient(ingredientName: "Vinaigrette", imageName: "vinaigrette"),
+                quantity: "3 tbsp"
+            )
          ],
          steps: [
              RecipeModel.Step(

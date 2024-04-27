@@ -29,13 +29,13 @@ class AuthModel: ObservableObject {
                 print("User \(user.uid) signed in.")
                 
                 if let auth = self {
-                    self?.profileRepository.fetchProfile(userId: user.uid) { (profile, error) in
+                    auth.profileRepository.fetchProfile(userId: user.uid) { (profile, error) in
                         if let error = error {
                             print("Error while fetching the user profile: \(error)")
                             return
                         }
-                        self?.profile = profile
-                        self?.isSignedIn = true
+                        auth.profile = profile
+                        auth.isSignedIn = true
                     }
                 }
             }

@@ -21,7 +21,7 @@ struct RecipesView: View {
         ScrollView {
             VStack(spacing: 20) {
                 ForEach(viewModel.recipes, id: \.recipeName) { recipe in
-                    NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
+                    NavigationLink(destination: LazyView(RecipeView(recipeId: "kIBFyJd7Rotf5bXJt18A", auth: authModel))) {
                         RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
                     }
                 }

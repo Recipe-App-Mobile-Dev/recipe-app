@@ -19,7 +19,7 @@
 		2A4CE8D02BC46C520076F3BB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A4CE8CF2BC46C520076F3BB /* Preview Assets.xcassets */; };
 		2A777D8A2BDCFF0C00FC779C /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A777D892BDCFF0C00FC779C /* ButtonView.swift */; };
 		2AA4F88C2BDD0BCB00F8BC98 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2AA4F88B2BDD0BCB00F8BC98 /* GoogleService-Info.plist */; };
-		2ABF4CD92BDD0183003350F1 /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABF4CD82BDD0183003350F1 /* FirestoreManager.swift */; };
+		2ABF4CD92BDD0183003350F1 /* RecipesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABF4CD82BDD0183003350F1 /* RecipesRepository.swift */; };
 		2AF1CD892BC46DFB00B022E9 /* RecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */; };
 		B9DC379E2BD15CCA00A13D8E /* AddRecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DC379D2BD15CCA00A13D8E /* AddRecipeView.swift */; };
 		EB299D3F2BD2C80C00794100 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB299D3E2BD2C80C00794100 /* UserModel.swift */; };
@@ -55,7 +55,7 @@
 		2A4CE8CF2BC46C520076F3BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2A777D892BDCFF0C00FC779C /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		2AA4F88B2BDD0BCB00F8BC98 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		2ABF4CD82BDD0183003350F1 /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
+		2ABF4CD82BDD0183003350F1 /* RecipesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesRepository.swift; sourceTree = "<group>"; };
 		2ABF4CDA2BDD0484003350F1 /* Recipe-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Recipe-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeView.swift; sourceTree = "<group>"; };
 		B9DC379D2BD15CCA00A13D8E /* AddRecipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeView.swift; sourceTree = "<group>"; };
@@ -107,7 +107,6 @@
 				2A3D414C2BCD414D008B968C /* RecipeViewModel.swift */,
 				2A3D41532BCD4F12008B968C /* StepView.swift */,
 				2A3D41552BCD51AE008B968C /* IngredientView.swift */,
-				2A3D41572BCD580B008B968C /* RecipesDummyData.swift */,
 				2A777D892BDCFF0C00FC779C /* ButtonView.swift */,
 			);
 			path = RecipeView;
@@ -143,10 +142,10 @@
 				2A3D41522BCD4EE8008B968C /* RecipeView */,
 				2A3D414B2BCD3DA2008B968C /* Model */,
 				2A4CE8C82BC46C510076F3BB /* Recipe_AppApp.swift */,
+				2A3D41572BCD580B008B968C /* RecipesDummyData.swift */,
 				2A4CE8CA2BC46C510076F3BB /* ContentView.swift */,
 				2A4CE8CC2BC46C520076F3BB /* Assets.xcassets */,
 				2A4CE8CE2BC46C520076F3BB /* Preview Content */,
-				2ABF4CD82BDD0183003350F1 /* FirestoreManager.swift */,
 			);
 			path = "Recipe App";
 			sourceTree = "<group>";
@@ -196,6 +195,7 @@
 		EBB08E212BDC738500A823B1 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
+				2ABF4CD82BDD0183003350F1 /* RecipesRepository.swift */,
 				EBB08E222BDC739900A823B1 /* UserProfileRepository.swift */,
 			);
 			path = Repository;
@@ -299,7 +299,7 @@
 				2A3D41582BCD580B008B968C /* RecipesDummyData.swift in Sources */,
 				EB299D442BD2C87500794100 /* LoginView.swift in Sources */,
 				2A777D8A2BDCFF0C00FC779C /* ButtonView.swift in Sources */,
-				2ABF4CD92BDD0183003350F1 /* FirestoreManager.swift in Sources */,
+				2ABF4CD92BDD0183003350F1 /* RecipesRepository.swift in Sources */,
 				EBFDE7AF2BCF37220004B18B /* RecipesViewModel.swift in Sources */,
 				EB299D4E2BD2DF5B00794100 /* SignUpViewModel.swift in Sources */,
 				2A3D41512BCD42FB008B968C /* IngredientModel.swift in Sources */,

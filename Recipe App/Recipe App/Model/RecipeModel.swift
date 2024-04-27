@@ -7,16 +7,21 @@
 
 import Foundation
 
-struct RecipeModel: Identifiable {
-    let id = UUID()
+struct RecipeModel: Identifiable, Codable {
+    let id: String
     let userId: String
     let recipeName: String
     let imageName: String
     let recipeDescription: String?
-    let ingredients: [Ingredient: String]
+    let ingredients: [RecipeIngridient]
     let steps: [Step]
     
-    struct Step {
+    struct RecipeIngridient: Codable {
+        let ingredient: Ingredient
+        let quantity: String
+    }
+    
+    struct Step: Codable {
         let stepNumber: Int
         let description: String
         let stepImage: String?
