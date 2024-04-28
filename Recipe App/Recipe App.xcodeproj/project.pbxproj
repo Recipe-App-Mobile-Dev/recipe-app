@@ -112,7 +112,6 @@
 				2AF1CD882BC46DFB00B022E9 /* RecipeView.swift */,
 				2A3D414C2BCD414D008B968C /* RecipeViewModel.swift */,
 				2A3D41532BCD4F12008B968C /* StepView.swift */,
-				2A3D41552BCD51AE008B968C /* IngredientView.swift */,
 				2A777D892BDCFF0C00FC779C /* ButtonView.swift */,
 			);
 			path = RecipeView;
@@ -185,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				EB299D482BD2DB6600794100 /* CustomTextField.swift */,
+				2A3D41552BCD51AE008B968C /* IngredientView.swift */,
 				2AA4F8912BDE7DA600F8BC98 /* ImageView.swift */,
 			);
 			path = SharedView;

@@ -12,19 +12,19 @@ class RecipesDummyData {
         id: "kIBFyJd7Rotf5bXJt18A",
         userId: "8t4KSPZAvzclXoCzBpOQZifge0m2",
         recipeName: "Tomato Toast",
-        imageName: "toasts",
+        imageName: "toasts.jpg",
         recipeDescription: "So simple. It's just toast, spread with cheese, topped with sliced fresh garden tomatoes, and sprinkled with coarse salt and freshly ground black pepper.",
         ingredients: [
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Tomatoes", imageName: "Tomato"),
+                ingredient: Ingredient(id: "1", ingredientName: "Tomatoes", imageName: "Tomato"),
                 quantity: "500g"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Bread", imageName: "bread"),
+                ingredient: Ingredient(id: "2", ingredientName: "Bread", imageName: "bread"),
                 quantity: "2 pieces"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Soft cheese", imageName: "softcheese"),
+                ingredient: Ingredient(id: "3", ingredientName: "Soft cheese", imageName: "softcheese"),
                 quantity: "2 tsp"
             )
         ],
@@ -55,15 +55,15 @@ class RecipesDummyData {
          recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
          ingredients: [
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Banana", imageName: "banana"),
+                ingredient: Ingredient(id: "4", ingredientName: "Banana", imageName: "banana"),
                 quantity: "1 whole"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Pineapple", imageName: "pineapple"),
+                ingredient: Ingredient(id: "5", ingredientName: "Pineapple", imageName: "pineapple"),
                 quantity: "1 cup"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Coconut water", imageName: "coconutwater"),
+                ingredient: Ingredient(id: "6", ingredientName: "Coconut water", imageName: "coconutwater"),
                 quantity: "1 cup"
             )
          ],
@@ -89,19 +89,19 @@ class RecipesDummyData {
          recipeDescription: "A tasty pasta salad packed with cucumbers, tomatoes, and a light vinaigrette. Perfect for picnics or a quick lunch.",
          ingredients: [
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Pasta", imageName: "pasta"),
+                ingredient: Ingredient(id: "6", ingredientName: "Pasta", imageName: "pasta"),
                 quantity: "200g"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Cucumbers", imageName: "cucumber"),
+                ingredient: Ingredient(id: "7", ingredientName: "Cucumbers", imageName: "cucumber"),
                 quantity: "1 whole"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Tomatoes", imageName: "Tomato"),
+                ingredient: Ingredient(id: "8", ingredientName: "Tomatoes", imageName: "Tomato"),
                 quantity: "200g"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(ingredientName: "Vinaigrette", imageName: "vinaigrette"),
+                ingredient: Ingredient(id: "9", ingredientName: "Vinaigrette", imageName: "vinaigrette"),
                 quantity: "3 tbsp"
             )
          ],

@@ -31,7 +31,7 @@ struct IngredientView: View {
 
 #Preview {
     IngredientView(
-        ingredient: Ingredient(ingredientName: "tomatoes", imageName: "Tomato"),
+        ingredient: Ingredient(id: "1", ingredientName: "tomatoes", imageName: "Tomato"),
         quantity: "500g"
     )
 }

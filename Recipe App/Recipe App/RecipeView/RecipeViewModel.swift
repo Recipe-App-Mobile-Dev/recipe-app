@@ -14,13 +14,13 @@ class RecipeViewModel: ObservableObject {
     private var imagesRepository = ImagesRepository()
     
     
-    init(recipeId: String) {
-        fetchRecipe(recipeId: recipeId)
+    init(recipe: RecipeModel) {
+        fetchRecipe(recipe: recipe)
     }
     
     
-    func fetchRecipe(recipeId: String) {
-        recipesRepository.fetchRecipe(id: recipeId) { [weak self] recipe, error in
+    func fetchRecipe(recipe: RecipeModel) {
+        recipesRepository.fetchRecipeInfo(forRecipe: recipe) { [weak self] recipe, error in
             guard let self = self else { return }
             if let error = error {
                 print("Error while fetching the recipe: \(error)")

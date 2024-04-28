@@ -8,22 +8,22 @@
 import Foundation
 
 struct RecipeModel: Identifiable, Codable {
-    let id: String
-    let userId: String
-    let recipeName: String
-    let imageName: String
-    let recipeDescription: String?
-    let ingredients: [RecipeIngridient]
-    let steps: [Step]
+    var id: String
+    var userId: String
+    var recipeName: String
+    var imageName: String
+    var recipeDescription: String?
+    var ingredients: [RecipeIngridient]? = nil
+    var steps: [Step]? = nil
     
     struct RecipeIngridient: Codable {
-        let ingredient: Ingredient
-        let quantity: String
+        var ingredient: Ingredient
+        var quantity: String
     }
     
     struct Step: Codable {
-        let stepNumber: Int
-        let description: String
-        let stepImage: String?
+        var stepNumber: Int
+        var description: String
+        var stepImage: String?
     }
 }

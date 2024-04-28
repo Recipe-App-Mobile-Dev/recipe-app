@@ -12,8 +12,8 @@ struct RecipeView: View {
     @ObservedObject var viewModel: RecipeViewModel
     @ObservedObject var authModel: AuthModel
     
-    init(recipeId: String, auth: AuthModel) {
-        viewModel = RecipeViewModel(recipeId: recipeId)
+    init(recipe: RecipeModel, auth: AuthModel) {
+        viewModel = RecipeViewModel(recipe: recipe)
         authModel = auth
     }
     
@@ -33,31 +33,35 @@ struct RecipeView: View {
                             .padding()
                     }
                     
-                    VStack {
-                        Text("Ingredients")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.title2)
-                            .padding(.bottom, 10.0)
-                        
-                        ForEach(Array(fetchedRecipe.ingredients), id: \.ingredient.id) { recipeIngredient in
-                            IngredientView(ingredient: recipeIngredient.ingredient, quantity: recipeIngredient.quantity)
-                                .padding(.vertical, 3.0)
-                        }
-                    }
-                    .padding()
-                    
-                    VStack {
-                        Text("Procedures")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.title2)
-                            .padding(.bottom, 10.0)
-                        
-                        ForEach(fetchedRecipe.steps.sorted(by: { $0.stepNumber < $1.stepNumber }), id: \.stepNumber) { step in
-                            StepView(recipeId: fetchedRecipe.id, step: step)
+                    if let ingredients = fetchedRecipe.ingredients {
+                        VStack {
+                            Text("Ingredients")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.title2)
                                 .padding(.bottom, 10.0)
+                            
+                            ForEach(Array(ingredients), id: \.ingredient.id) { recipeIngredient in
+                                IngredientView(ingredient: recipeIngredient.ingredient, quantity: recipeIngredient.quantity)
+                                    .padding(.vertical, 3.0)
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
+                    
+                    if let steps = fetchedRecipe.steps {
+                        VStack {
+                            Text("Procedures")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.title2)
+                                .padding(.bottom, 10.0)
+                            
+                            ForEach(steps.sorted(by: { $0.stepNumber < $1.stepNumber }), id: \.stepNumber) { step in
+                                StepView(recipeId: fetchedRecipe.id, step: step)
+                                    .padding(.bottom, 10.0)
+                            }
+                        }
+                        .padding()
+                    }
 
                     if let userId = authModel.profile?.uid,
                        userId == fetchedRecipe.userId {
@@ -79,5 +83,5 @@ struct RecipeView: View {
 }
 
 #Preview {
-    RecipeView(recipeId: "8t4KSPZAvzclXoCzBpOQZifge0m2", auth: AuthModel(testProfile: true))
+    RecipeView(recipe: RecipesDummyData.ToastRecipe, auth: AuthModel(testProfile: true))
 }
