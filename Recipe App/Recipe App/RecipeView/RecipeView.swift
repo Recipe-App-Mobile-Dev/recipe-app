@@ -21,8 +21,7 @@ struct RecipeView: View {
         if let fetchedRecipe = viewModel.recipe {
             GeometryReader { geometry in
                 ScrollView {
-                    Image(fetchedRecipe.imageName)
-                        .resizable()
+                    LoadImageView(imageName: "recipes/" + fetchedRecipe.imageName)
                         .aspectRatio(contentMode: .fill)
                         .frame(width: geometry.size.width - 40, height: 300)
                         .cornerRadius(10)
@@ -53,8 +52,8 @@ struct RecipeView: View {
                             .font(.title2)
                             .padding(.bottom, 10.0)
                         
-                        ForEach(fetchedRecipe.steps, id: \.stepNumber) { step in
-                            StepView(step: step)
+                        ForEach(fetchedRecipe.steps.sorted(by: { $0.stepNumber < $1.stepNumber }), id: \.stepNumber) { step in
+                            StepView(recipeId: fetchedRecipe.id, step: step)
                                 .padding(.bottom, 10.0)
                         }
                     }
@@ -74,11 +73,11 @@ struct RecipeView: View {
             }
             .navigationTitle(fetchedRecipe.recipeName)
         } else {
-            Label("Loading", systemImage: "hourglass")
+            ProgressView()
         }
     }
 }
 
 #Preview {
-    RecipeView(recipeId: "8t4KSPZAvzclXoCzBpOQZifge0m2", auth: AuthModel())
+    RecipeView(recipeId: "8t4KSPZAvzclXoCzBpOQZifge0m2", auth: AuthModel(testProfile: true))
 }

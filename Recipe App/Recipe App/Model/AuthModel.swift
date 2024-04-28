@@ -16,8 +16,12 @@ class AuthModel: ObservableObject {
     @Published var profile: UserProfile?
     private var profileRepository = UserProfileRepository()
     
-    init() {
-        observeAuthChanges()
+    init(testProfile: Bool? = false) {
+        if let test = testProfile, test == true  {
+            self.profile = UserProfile(uid: "8t4KSPZAvzclXoCzBpOQZifge0m2", name: "test", icon: "defaultIcon")
+        } else {
+            observeAuthChanges()
+        }
     }
     
     private func observeAuthChanges() {

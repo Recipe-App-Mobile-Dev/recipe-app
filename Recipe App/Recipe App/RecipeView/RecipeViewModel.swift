@@ -6,20 +6,31 @@
 //
 
 import Foundation
+import SwiftUI
 
 class RecipeViewModel: ObservableObject {
     @Published var recipe: RecipeModel?
     private var recipesRepository = RecipesRepository()
+    private var imagesRepository = ImagesRepository()
+    
     
     init(recipeId: String) {
-        recipesRepository.fetchRecipe(id: recipeId) { (recipe, error) in
+        fetchRecipe(recipeId: recipeId)
+    }
+    
+    
+    func fetchRecipe(recipeId: String) {
+        recipesRepository.fetchRecipe(id: recipeId) { [weak self] recipe, error in
+            guard let self = self else { return }
             if let error = error {
                 print("Error while fetching the recipe: \(error)")
                 return
+            } else {
+                self.recipe = recipe
             }
-            self.recipe = recipe
         }
     }
+    
     
     // func editRecipe
     // func deleteRecipe
