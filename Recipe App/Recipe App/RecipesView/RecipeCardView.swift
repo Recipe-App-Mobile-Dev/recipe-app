@@ -13,8 +13,7 @@ struct RecipeCardView: View {
     var recipeName: String
     
     var body: some View {
-        Image(imageName)
-            .resizable()
+        LoadImageView(imageName: "recipes/" + imageName)
             .aspectRatio(contentMode: .fill)
             .frame(height: 200)
             .clipped()

@@ -16,7 +16,6 @@ class ImagesRepository: ObservableObject {
     
     func getImage(name: String, completion: @escaping (Image?) -> Void) {
         let imageRef = storageRef.child(name)
-        print(imageRef)
         
         imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
             if let error = error {

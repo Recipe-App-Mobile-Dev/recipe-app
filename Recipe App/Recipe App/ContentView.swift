@@ -14,7 +14,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             if authModel.isSignedIn {
-                RecipesView(recipes: RecipesDummyData.recipes, authModel: authModel)
+                RecipesView(authModel: authModel)
             } else {
                 LoginView(authModel: authModel)
             }

@@ -11,7 +11,6 @@ import SwiftUI
 class RecipeViewModel: ObservableObject {
     @Published var recipe: RecipeModel?
     private var recipesRepository = RecipesRepository()
-    private var imagesRepository = ImagesRepository()
     
     
     init(recipe: RecipeModel) {
@@ -30,9 +29,18 @@ class RecipeViewModel: ObservableObject {
             }
         }
     }
+
     
+    func deleteRecipe(completion: @escaping () -> Void) {
+        if let id = recipe?.id {
+            recipesRepository.deleteRecipe(recipeId: id) { error in
+                if let error = error {
+                    print("Error deleting recipe: \(error.localizedDescription)")
+                } 
+            }
+        }
+    }
     
     // func editRecipe
-    // func deleteRecipe
     // func rateRecipe
 }

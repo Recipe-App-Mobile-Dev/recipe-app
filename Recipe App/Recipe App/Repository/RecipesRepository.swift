@@ -17,7 +17,7 @@ class RecipesRepository: ObservableObject {
         let collectionRef = db.collection("recipes")
         let data: [String: Any] = [
             "userId": recipe.userId,
-            "recipeName": recipe.userId,
+            "recipeName": recipe.recipeName,
             "imageName": recipe.imageName,
             "recipeDescription": recipe.recipeDescription ?? nil
         ]
@@ -33,18 +33,7 @@ class RecipesRepository: ObservableObject {
             for step in steps {
                 self.addRecipeStep(recipeId: docRef.documentID, recipeStep: step) { (step, error) in
                     if let error = error {
-                        print("Error while fetching the user profile: \(error)")
-                        return
-                    }
-                }
-            }
-        }
-        
-        if let steps = recipe.steps {
-            for step in steps {
-                self.addRecipeStep(recipeId: docRef.documentID, recipeStep: step) { (step, error) in
-                    if let error = error {
-                        print("Error while fetching the user profile: \(error)")
+                        print("Error adding recipe steps: \(error)")
                         return
                     }
                 }
@@ -55,7 +44,7 @@ class RecipesRepository: ObservableObject {
             for ingredient in ingredients {
                 self.addRecipeIngredient(recipeId: docRef.documentID, recipeIngredient: ingredient) { (ingredient, error) in
                     if let error = error {
-                        print("Error while fetching the user profile: \(error)")
+                        print("Error adding recipe ingredients: \(error)")
                         return
                     }
                 }
@@ -75,8 +64,15 @@ class RecipesRepository: ObservableObject {
         
         let docRef = db.collection("recipes/\(recipeId)/steps").addDocument(data: data) { error in
             if let error = error {
-                print("Error adding document: \(error)")
+                print("Error adding step: \(error)")
                 return
+            }
+        }
+        
+        let recipeRef = db.collection("recipes").document(recipeId)
+        recipeRef.updateData(["steps": FieldValue.arrayUnion([docRef.documentID])]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
             }
         }
         
@@ -86,15 +82,22 @@ class RecipesRepository: ObservableObject {
     
     func addRecipeIngredient(recipeId: String, recipeIngredient: RecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: RecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
-            "ingredient": recipeIngredient.ingredient,
+            "ingredient": recipeIngredient.ingredient.id,
             "quantity": recipeIngredient.quantity
         ]
         
-        let docRef = db.collection("recipes/\(recipeId)/steps").addDocument(data: data) { error in
+        let docRef = db.collection("recipes/\(recipeId)/RecipeIngridient").addDocument(data: data) { error in
             if let error = error {
-                print("Error adding document: \(error)")
+                print("Error adding ingredient: \(error)")
                 return
             }
+        }
+        
+        let recipeRef = db.collection("recipes").document(recipeId)
+        recipeRef.updateData(["ingredients": FieldValue.arrayUnion([docRef.documentID])]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+            } 
         }
         
         completion(recipeIngredient, nil)
@@ -103,7 +106,7 @@ class RecipesRepository: ObservableObject {
     
     func addIngredient(ingredient: Ingredient, completion: @escaping (_ ingredient: Ingredient?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
-            "ingredientName": ingredient.imageName,
+            "ingredientName": ingredient.ingredientName,
             "imageName": ingredient.imageName
         ]
         
@@ -261,14 +264,69 @@ class RecipesRepository: ObservableObject {
             
             if let document = document {
                 let ingredient = Ingredient(
-                    id: ingredientId,
+                    id: document.documentID,
                     ingredientName: document["ingredientName"] as? String ?? "",
                     imageName: document["imageName"] as? String ?? ""
                 )
                 completion(ingredient, nil)
+            } else {
+                completion(nil, error)
+            }
+        }
+    }
+    
+    func deleteRecipe(recipeId: String, completion: @escaping (_ error: Error?) -> Void) {
+        let steps = "recipes/\(recipeId)/steps"
+        deleteCollection(collectionName: steps) { error in
+            if let error = error {
+                print("Error deleting collection: \(error.localizedDescription)")
+            } else {
+                print("Collection deleted successfully.")
+            }
+        }
+        
+        let ingredients = "recipes/\(recipeId)/RecipeIngridient"
+        deleteCollection(collectionName: ingredients) { error in
+            if let error = error {
+                print("Error deleting collection: \(error.localizedDescription)")
+            } else {
+                print("Collection deleted successfully.")
+            }
+        }
+        
+        let docRef = db.collection("recipes").document(recipeId).delete { error in
+            if let error = error {
+                print("Error deleting document: \(error)")
+                return
+            }
+        }
+    }
+    
+    func deleteCollection(collectionName: String, batchSize: Int = 100, completion: @escaping (Error?) -> Void) {
+        let collectionRef = db.collection(collectionName)
+        // Get the documents in the collection
+        collectionRef.getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {
+                completion(error)
+                return
             }
             
-            completion(nil, error)
+            // Create a batch operation
+            let batch = collectionRef.firestore.batch()
+            
+            // Iterate over the documents in batches and delete them
+            snapshot.documents.enumerated().forEach { index, document in
+                batch.deleteDocument(document.reference)
+                
+                // Commit the batch after every batchSize documents
+                if index % batchSize == (batchSize - 1) || index == snapshot.documents.count - 1 {
+                    batch.commit { batchError in
+                        if let batchError = batchError {
+                            completion(batchError)
+                        }
+                    }
+                }
+            }
         }
     }
 }
