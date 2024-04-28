@@ -13,6 +13,8 @@ class AuthModel: ObservableObject {
     @Published var isSignedIn = false
     @Published var email = ""
     @Published var password = ""
+    @Published var profile: UserProfile?
+    private var profileRepository = UserProfileRepository()
     
     init() {
         observeAuthChanges()
@@ -27,31 +29,59 @@ class AuthModel: ObservableObject {
     }
     
     func login(email: String, password: String, completion: @escaping (Bool) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
-            DispatchQueue.main.async {
-                if result != nil, error == nil {
-                    self?.isSignedIn = true
+        Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
+            if let error = error {
+                print("Error signing in: \(error)")
+                completion(false)
+                return
+            }
+            
+            guard let user = result?.user else { return }
+            print("User \(user.uid) signed in.")
+            
+            self.profileRepository.fetchProfile(userId: user.uid) { (profile, error) in
+                if let error = error {
+                    print("Error while fetching the user profile: \(error)")
+                    completion(false)
+                    return
                 }
+                self.profile = profile
+                self.isSignedIn = true
+                completion(true)
             }
         }
-        completion(true)
     }
     
-    func signUp(name: String, email: String, password: String, passwordConfirmation: String, completion: @escaping (Bool) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
-            DispatchQueue.main.async {
-                if result != nil, error == nil {
-                    self?.isSignedIn = true
+    func signUp(name: String, email: String, password: String, completion: @escaping (Bool) -> Void) {
+        Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
+            if let error = error {
+                print("Error signing up: \(error)")
+                completion(false)
+                return
+            }
+            
+            guard let user = result?.user else { return }
+            print("User \(user.uid) signed up.")
+            
+            let userProfile = UserProfile(uid: user.uid, name: name, icon: "defaultIcon")
+            self.profileRepository.createProfile(profile: userProfile) { (profile, error) in
+                if let error = error {
+                    print("Error while fetching the user profile: \(error)")
+                    completion(false)
+                    return
                 }
+                self.profile = profile
+                self.isSignedIn = true
+                completion(true)
             }
         }
-        completion(true)
     }
     
     func signOut() {
         do {
             try Auth.auth().signOut()
-            isSignedIn = false
+            self.isSignedIn = false
+            self.profile = nil
         } catch let signOutError as NSError {
             print("Error signing out: %@", signOutError)
         }

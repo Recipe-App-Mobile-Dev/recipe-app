@@ -22,15 +22,20 @@ class SignUpViewModel: ObservableObject {
     }
 
     func signUp() {
-        print(name)
-        if !name.isEmpty && !email.isEmpty && !password.isEmpty && !passwordConfirmation.isEmpty{
-            authModel.signUp(name: name, email: email, password: password, passwordConfirmation: passwordConfirmation) { success in
-                if !success {
-                    self.errorMessage = "Invalid credentials."
-                }
-            }
-        } else {
+        if name.isEmpty || email.isEmpty || password.isEmpty || passwordConfirmation.isEmpty {
             errorMessage = "Please fill in all fields."
+            return
+        }
+        
+        if password != passwordConfirmation {
+            errorMessage = "Passwords do not match."
+            return
+        }
+        
+        authModel.signUp(name: name, email: email, password: password) { success in
+            if !success {
+                self.errorMessage = "Invalid credentials."
+            }
         }
     }
 }

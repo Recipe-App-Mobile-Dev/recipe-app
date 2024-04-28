@@ -29,6 +29,10 @@
 		EB44BDFA2BD980B200DC26BB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB44BDF92BD980B200DC26BB /* GoogleService-Info.plist */; };
 		EB44BDFE2BD981A300DC26BB /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = EB44BDFD2BD981A300DC26BB /* FirebaseAppCheck */; };
 		EB44BE002BD983DB00DC26BB /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EB44BDFF2BD983DB00DC26BB /* FirebaseAuth */; };
+		EBB08E202BDC732700A823B1 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB08E1F2BDC732700A823B1 /* UserProfile.swift */; };
+		EBB08E232BDC739900A823B1 /* UserProfileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB08E222BDC739900A823B1 /* UserProfileRepository.swift */; };
+		EBB08E252BDC749D00A823B1 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = EBB08E242BDC749D00A823B1 /* FirebaseFirestore */; };
+		EBB08E272BDC749D00A823B1 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EBB08E262BDC749D00A823B1 /* FirebaseFirestoreSwift */; };
 		EBFDE7AD2BCF349B0004B18B /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBFDE7AC2BCF349B0004B18B /* RecipeCardView.swift */; };
 		EBFDE7AF2BCF37220004B18B /* RecipesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBFDE7AE2BCF37220004B18B /* RecipesViewModel.swift */; };
 		EBFDE7B12BCF378D0004B18B /* RecipesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBFDE7B02BCF378D0004B18B /* RecipesView.swift */; };
@@ -55,8 +59,9 @@
 		EB299D482BD2DB6600794100 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		EB299D4A2BD2DD4400794100 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		EB299D4D2BD2DF5B00794100 /* SignUpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewModel.swift; sourceTree = "<group>"; };
-		EB44BDF92BD980B200DC26BB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		EB44BDFB2BD980C200DC26BB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		EBB08E1F2BDC732700A823B1 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		EBB08E222BDC739900A823B1 /* UserProfileRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileRepository.swift; sourceTree = "<group>"; };
 		EBFDE7AC2BCF349B0004B18B /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
 		EBFDE7AE2BCF37220004B18B /* RecipesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesViewModel.swift; sourceTree = "<group>"; };
 		EBFDE7B02BCF378D0004B18B /* RecipesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesView.swift; sourceTree = "<group>"; };
@@ -69,6 +74,8 @@
 			files = (
 				EB44BDFE2BD981A300DC26BB /* FirebaseAppCheck in Frameworks */,
 				EB44BE002BD983DB00DC26BB /* FirebaseAuth in Frameworks */,
+				EBB08E252BDC749D00A823B1 /* FirebaseFirestore in Frameworks */,
+				EBB08E272BDC749D00A823B1 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +89,7 @@
 				2A3D414E2BCD4274008B968C /* RecipeModel.swift */,
 				2A3D41502BCD42FB008B968C /* IngredientModel.swift */,
 				EB299D3E2BD2C80C00794100 /* UserModel.swift */,
+				EBB08E1F2BDC732700A823B1 /* UserProfile.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -117,6 +125,7 @@
 		2A4CE8C72BC46C510076F3BB /* Recipe App */ = {
 			isa = PBXGroup;
 			children = (
+				EBB08E212BDC738500A823B1 /* Repository */,
 				EB44BDFB2BD980C200DC26BB /* GoogleService-Info.plist */,
 				EB299D4C2BD2DEDB00794100 /* SignUpView */,
 				EB299D472BD2DB2700794100 /* SharedView */,
@@ -176,6 +185,14 @@
 			path = SignUpView;
 			sourceTree = "<group>";
 		};
+		EBB08E212BDC738500A823B1 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				EBB08E222BDC739900A823B1 /* UserProfileRepository.swift */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
 		EBFDE7AB2BCF34400004B18B /* RecipesView */ = {
 			isa = PBXGroup;
 			children = (
@@ -205,6 +222,8 @@
 			packageProductDependencies = (
 				EB44BDFD2BD981A300DC26BB /* FirebaseAppCheck */,
 				EB44BDFF2BD983DB00DC26BB /* FirebaseAuth */,
+				EBB08E242BDC749D00A823B1 /* FirebaseFirestore */,
+				EBB08E262BDC749D00A823B1 /* FirebaseFirestoreSwift */,
 			);
 			productName = "Recipe App";
 			productReference = 2A4CE8C52BC46C510076F3BB /* Recipe App.app */;
@@ -266,6 +285,7 @@
 			files = (
 				2A3D414D2BCD414D008B968C /* RecipeViewModel.swift in Sources */,
 				2AF1CD892BC46DFB00B022E9 /* RecipeView.swift in Sources */,
+				EBB08E202BDC732700A823B1 /* UserProfile.swift in Sources */,
 				B9DC379E2BD15CCA00A13D8E /* AddRecipeView.swift in Sources */,
 				2A3D41582BCD580B008B968C /* RecipesDummyData.swift in Sources */,
 				EB299D442BD2C87500794100 /* LoginView.swift in Sources */,
@@ -277,6 +297,7 @@
 				EB299D4B2BD2DD4400794100 /* LoginViewModel.swift in Sources */,
 				EB299D492BD2DB6600794100 /* CustomTextField.swift in Sources */,
 				2A4CE8CB2BC46C510076F3BB /* ContentView.swift in Sources */,
+				EBB08E232BDC739900A823B1 /* UserProfileRepository.swift in Sources */,
 				EBFDE7AD2BCF349B0004B18B /* RecipeCardView.swift in Sources */,
 				2A3D41542BCD4F12008B968C /* StepView.swift in Sources */,
 				EB299D422BD2C85A00794100 /* AuthModel.swift in Sources */,
@@ -511,6 +532,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EB44BDFC2BD981A300DC26BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		EBB08E242BDC749D00A823B1 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB44BDFC2BD981A300DC26BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		EBB08E262BDC749D00A823B1 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB44BDFC2BD981A300DC26BB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
