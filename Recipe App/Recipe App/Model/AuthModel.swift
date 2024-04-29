@@ -16,14 +16,32 @@ class AuthModel: ObservableObject {
     @Published var profile: UserProfile?
     private var profileRepository = UserProfileRepository()
     
-    init() {
-        observeAuthChanges()
+    init(testProfile: Bool? = false) {
+        if let test = testProfile, test == true  {
+            self.profile = UserProfile(uid: "8t4KSPZAvzclXoCzBpOQZifge0m2", name: "test", icon: "defaultIcon")
+        } else {
+            observeAuthChanges()
+        }
     }
     
     private func observeAuthChanges() {
         Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
                 self?.isSignedIn = user != nil
+                
+                guard let user = user else { return }
+                print("User \(user.uid) signed in.")
+                
+                if let auth = self {
+                    auth.profileRepository.fetchProfile(userId: user.uid) { (profile, error) in
+                        if let error = error {
+                            print("Error while fetching the user profile: \(error)")
+                            return
+                        }
+                        auth.profile = profile
+                        auth.isSignedIn = true
+                    }
+                }
             }
         }
     }
