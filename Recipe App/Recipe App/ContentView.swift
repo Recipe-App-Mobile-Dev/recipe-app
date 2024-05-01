@@ -6,19 +6,24 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct ContentView: View {
+    @StateObject var authModel: AuthModel = AuthModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            if authModel.isSignedIn {
+                RecipesView(authModel: authModel)
+            } else {
+                LoginView(authModel: authModel)
+            }
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
