@@ -44,7 +44,8 @@ class RecipesDummyData {
                 description: "Once the bread is lightly toasted, spread the cheese on toasts. Top them with a couple slices of tomato, overlapping if necessary.",
                 stepImage: "finish"
             )
-        ]
+        ],
+        categories: [.breakfast, .appetizer]
     )
     
     public static var SmoothieRecipe: RecipeModel = RecipeModel(
@@ -78,7 +79,8 @@ class RecipesDummyData {
                  description: "Blend on high until smooth.",
                  stepImage: "smoothie.jpeg"
              )
-         ]
+         ],
+         categories: [.drink]
      )
 
      public static var SaladRecipe: RecipeModel = RecipeModel(
@@ -121,7 +123,8 @@ class RecipesDummyData {
                  description: "Combine the pasta, cucumbers, tomatoes, and vinaigrette in a large bowl.",
                  stepImage: "pastasalad.jpeg"
              )
-         ]
+         ],
+         categories: [.breakfast, .salad, .side]
      )
     
     public static var recipes: [RecipeModel] = [ToastRecipe, SmoothieRecipe, SaladRecipe]

@@ -8,16 +8,26 @@
 import SwiftUI
 import UIKit
 
+struct IngredientData {
+    var image: Image?
+    var isShowingImagePicker: Bool
+    var textInput: String
+}
+
 struct AddRecipeView: View {
     @State private var name: String = ""
     @State private var category: String = ""
     @State private var description: String = ""
     @State private var ingredients: String = ""
+    @State private var ingredientRows: [[IngredientData]] = [[]]
     @State private var direction: String = ""
     @State private var image: Image?
     @State private var isShowingImagePicker = false
     @State private var addingredients: [String] = []
+    @State private var textInput: String = ""
+    @State private var showNextRow = false
     @State private var procedures: [String] = []
+    @State private var selectedCategories: [Category] = []
 
     @Environment(\.dismiss)var dismiss
     
@@ -56,12 +66,99 @@ struct AddRecipeView: View {
                     TextEditor(text:$description)
                 }
                 Section(header: Text("Ingredients")){
-                    ForEach(addingredients.indices, id: \.self) { index in
-                        Text("Ingredient \(index + 1)")
-                        TextEditor(text:$addingredients[index])
+                    ForEach(ingredientRows.indices, id:\.self) { rowIndex in
+                        Grid(alignment: .topTrailing, horizontalSpacing: 20) {
+                            GridRow {
+                                VStack {
+                                    image?
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                        .padding()
+                                    
+                                    Button(action: {
+                                        isShowingImagePicker = true
+                                    }) {
+                                        Text("Upload Image")
+                                            .foregroundStyle(.cyan)
+                                        
+                                    }
+                                }
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(.blue, lineWidth: 2)
+                                )
+                                .padding()
+                                
+                                VStack {
+                                    TextField("Enter text", text: $textInput)
+                                        .padding()
+                                }
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(.blue, lineWidth: 2)
+                                )
+                                .padding()
+                                
+                                VStack {
+                                    TextField("Enter text", text: $textInput)
+                                        .padding()
+                                }
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(.blue, lineWidth: 2)
+                                )
+                                .padding()
+                            }
+                            
+                            if showNextRow {
+                                GridRow{
+                                    VStack {
+                                        image?
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 100, height: 100)
+                                            .padding()
+                                        
+                                        Button(action: {
+                                            isShowingImagePicker = true
+                                        }) {
+                                            Text("Upload Image")
+                                                .foregroundStyle(.cyan)
+                                            
+                                        }
+                                    }
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(.blue, lineWidth: 2)
+                                    )
+                                    .padding()
+                                    
+                                    VStack {
+                                        TextField("Name", text: $textInput)
+                                            .padding()
+                                    }
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .stroke(.blue, lineWidth: 2)
+                                    )
+                                    .padding()
+                                    
+                                    VStack {
+                                        TextField("Amount", text: $textInput)
+                                            .padding()
+                                    }
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .stroke(.blue, lineWidth: 2)
+                                    )
+                                    .padding()
+                                }
+                            }
+                        }
                     }
                     Button(action: {
-                        addIngredient()
+                        addIngredientRow()
                     }) {
                         Text("Add Ingredient")
                     }
@@ -77,19 +174,38 @@ struct AddRecipeView: View {
                         Text("Add Procedure")
                     }
                 }
-            }
-            .navigationTitle("New Recipe")
-            .navigationBarTitleDisplayMode(.inline)
-//            .navigationBarItems(trailing: Button("Done") {
-//                        dismiss()
-//                    })
-            .toolbar {
-                        ToolbarItem(placement: .bottomBar) {
-                            Button("Done") {
-                                dismiss()
+                Section(header: Text("Categories")){
+                    ScrollView(.horizontal, showsIndicators:false){
+                        LazyHGrid(rows: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10){
+                            ForEach(Category.allCases){
+                                category in
+                                Button(action: {
+                                    toggleCategorySelection(category)
+                                }) {
+                                    Text(category.rawValue)
+                                        .foregroundColor(selectedCategories.contains(category) ? .white : .blue)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(selectedCategories.contains(category) ? Color.blue : Color.white)
+                                        .cornerRadius(10)
+                                }
                             }
                         }
                     }
+                }
+            }
+            .navigationTitle("New Recipe")
+            .navigationBarTitleDisplayMode(.inline)
+            //            .navigationBarItems(trailing: Button("Done") {
+            //                        dismiss()
+            //                    })
+            .toolbar {
+                ToolbarItem(placement: .bottomBar) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
             .fileImporter(
                 isPresented: $isShowingImagePicker,
                 allowedContentTypes: [.image],
@@ -110,8 +226,19 @@ struct AddRecipeView: View {
     private func addProcedure() {
         procedures.append("")
     }
-    private func addIngredient() {
-        addingredients.append("")
+    private func addIngredientRow() {
+        var newRow: [IngredientData] = []
+            for _ in 0..<3 {
+                newRow.append(IngredientData(image: nil, isShowingImagePicker: false, textInput: ""))
+            }
+            ingredientRows.append(newRow)
+    }
+    private func toggleCategorySelection(_ category: Category){
+        if selectedCategories.contains(category) {
+            selectedCategories.removeAll{ $0 == category }
+        } else {
+            selectedCategories.append(category)
+        }
     }
 }
 struct AddRecipeView_Previews: PreviewProvider {
