@@ -19,30 +19,44 @@ struct RecipesView: View {
 
     var body: some View {
         if let fetchedRecipes = viewModel.recipes {
-            ScrollView {
-                VStack(spacing: 20) {
-                    ForEach(fetchedRecipes, id: \.recipeName) { recipe in
-                        NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
-                            RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
+            GeometryReader { geometry in
+                ZStack(alignment: .bottomTrailing) {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            ForEach(fetchedRecipes, id: \.recipeName) { recipe in
+                                NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
+                                    RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
+                                }
+                            }
                         }
+                        .padding()
                     }
-                }
-                .padding()
-                Button("Log Out") {
-                    authModel.signOut()
-                }
-            }
-            .navigationBarTitle("App Name", displayMode: .inline)
-            .navigationBarItems(
-                leading: NavigationLink(destination: AddRecipeView()) {
-                    Image(systemName: "plus")
-                },
-                trailing: Button(action: {
-                    // Action for searching
-                }) {
-                    Image(systemName: "magnifyingglass")
-                }
-            )
+                        
+                    NavigationLink(destination: AddRecipeView()) {
+                        Image(systemName: "plus")
+                            .font(.title.weight(.semibold))
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                            .shadow(radius: 4, x: 0, y: 4)
+                    }
+                    .padding([.trailing, .bottom], 20)
+                    .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height, alignment: .bottomTrailing)
+                    
+                    }
+                    .navigationBarTitle("App Name", displayMode: .inline)
+                    .navigationBarItems(
+                        leading: NavigationLink(destination: ProfileView(authModel: authModel)) {
+                            Image(systemName: "person")
+                        },
+                        trailing: Button(action: {
+                            // Action for searching
+                        }) {
+                            Image(systemName: "magnifyingglass")
+                        }
+                    )
+              }
         }
     }
 }

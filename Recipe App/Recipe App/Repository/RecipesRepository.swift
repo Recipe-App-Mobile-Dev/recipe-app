@@ -145,6 +145,31 @@ class RecipesRepository: ObservableObject {
         }
     }
     
+    func fetchUserRecipes(userId: String, completion: @escaping (_ recipe: [RecipeModel]?, _ error: Error?) -> Void) {
+        db.collection("recipes").whereField("userId", isEqualTo: userId).getDocuments { (querySnapshot, error) in
+            guard let querySnapshot = querySnapshot, error == nil else {
+                print("Error getting recipes: \(error?.localizedDescription ?? "")")
+                completion(nil, error)
+                return
+            }
+
+            var recipesArray: [RecipeModel] = []
+
+            for document in querySnapshot.documents {
+                let recipe = RecipeModel(
+                    id: document.documentID,
+                    userId: document["userId"] as? String ?? "",
+                    recipeName: document["recipeName"] as? String ?? "",
+                    imageName: document["imageName"] as? String ?? "",
+                    recipeDescription: document["recipeDescription"] as? String ?? ""
+                )
+                recipesArray.append(recipe)
+            }
+
+            completion(recipesArray, nil)
+        }
+    }
+    
     
     func fetchRecipeInfo(forRecipe: RecipeModel, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
         let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
