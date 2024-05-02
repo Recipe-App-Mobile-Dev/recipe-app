@@ -22,8 +22,7 @@ struct RecipeView: View {
             JustRecipeView(recipe: fetchedRecipe)
                 .navigationTitle(fetchedRecipe.recipeName)
 
-            if let userId = authModel.profile?.uid,
-               userId == fetchedRecipe.userId {
+            if authModel.profile.uid == fetchedRecipe.userId {
                 HStack {
                     Button(action: RecipesDummyData.addDataToFirebase) {
                         ButtonView(text: "Edit", color: Color.green)
