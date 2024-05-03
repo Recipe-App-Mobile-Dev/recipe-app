@@ -15,11 +15,18 @@ class RecipesRepository: ObservableObject {
     
     func addRecipe(recipe: RecipeModel, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
         let collectionRef = db.collection("recipes")
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        let dateString = dateFormatter.string(from: Date())
+        
         let data: [String: Any] = [
             "userId": recipe.userId,
             "recipeName": recipe.recipeName,
             "imageName": recipe.imageName,
-            "recipeDescription": recipe.recipeDescription ?? nil
+            "recipeDescription": recipe.recipeDescription ?? nil,
+            "dateCreated": dateString
         ]
         
         let docRef = collectionRef.addDocument(data: data) { error in
@@ -131,14 +138,23 @@ class RecipesRepository: ObservableObject {
             var recipesArray: [RecipeModel] = []
             
             for document in querySnapshot!.documents {
-                let recipe = RecipeModel(
-                    id: document.documentID as String,
-                    userId: document["userId"] as? String ?? "",
-                    recipeName: document["recipeName"] as? String ?? "",
-                    imageName: document["imageName"] as? String ?? "",
-                    recipeDescription: document["recipeDescription"] as? String ?? ""
-                )
-                recipesArray.append(recipe)
+                print(document["dateCreated"])
+                print(type(of: document["dateCreated"]))
+                if let dateString = document["dateCreated"] as? String {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                    if let date = dateFormatter.date(from: dateString) {
+                        let recipe = RecipeModel(
+                            id: document.documentID as String,
+                            userId: document["userId"] as? String ?? "",
+                            recipeName: document["recipeName"] as? String ?? "",
+                            imageName: document["imageName"] as? String ?? "",
+                            recipeDescription: document["recipeDescription"] as? String ?? "",
+                            dateCreated: date
+                        )
+                        recipesArray.append(recipe)
+                    }
+                }
             }
             
             completion(recipesArray, error)
@@ -156,14 +172,21 @@ class RecipesRepository: ObservableObject {
             var recipesArray: [RecipeModel] = []
 
             for document in querySnapshot.documents {
-                let recipe = RecipeModel(
-                    id: document.documentID,
-                    userId: document["userId"] as? String ?? "",
-                    recipeName: document["recipeName"] as? String ?? "",
-                    imageName: document["imageName"] as? String ?? "",
-                    recipeDescription: document["recipeDescription"] as? String ?? ""
-                )
-                recipesArray.append(recipe)
+                if let dateString = document["dateCreated"] as? String {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                    if let date = dateFormatter.date(from: dateString) {
+                        let recipe = RecipeModel(
+                            id: document.documentID as String,
+                            userId: document["userId"] as? String ?? "",
+                            recipeName: document["recipeName"] as? String ?? "",
+                            imageName: document["imageName"] as? String ?? "",
+                            recipeDescription: document["recipeDescription"] as? String ?? "",
+                            dateCreated: date
+                        )
+                        recipesArray.append(recipe)
+                    }
+                }
             }
 
             completion(recipesArray, nil)

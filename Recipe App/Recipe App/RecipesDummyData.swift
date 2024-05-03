@@ -45,7 +45,8 @@ class RecipesDummyData {
                 stepImage: "finish"
             )
         ],
-        categories: [.breakfast, .appetizer]
+        categories: [.breakfast, .appetizer],
+        dateCreated: Calendar.current.date(from: DateComponents(year: 2024, month: 1, day: 1, hour: 12, minute: 0))!
     )
     
     public static var SmoothieRecipe: RecipeModel = RecipeModel(
@@ -80,7 +81,8 @@ class RecipesDummyData {
                  stepImage: "smoothie.jpeg"
              )
          ],
-         categories: [.drink]
+         categories: [.drink],
+         dateCreated: Calendar.current.date(from: DateComponents(year: 2024, month: 1, day: 2, hour: 12, minute: 0))!
      )
 
      public static var SaladRecipe: RecipeModel = RecipeModel(
@@ -124,7 +126,8 @@ class RecipesDummyData {
                  stepImage: "pastasalad.jpeg"
              )
          ],
-         categories: [.breakfast, .salad, .side]
+         categories: [.breakfast, .salad, .side],
+         dateCreated: Calendar.current.date(from: DateComponents(year: 2024, month: 1, day: 3, hour: 12, minute: 0))!
      )
     
     public static var recipes: [RecipeModel] = [ToastRecipe, SmoothieRecipe, SaladRecipe]

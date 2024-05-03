@@ -19,35 +19,41 @@ struct RecipeView: View {
     
     var body: some View {
         if let fetchedRecipe = viewModel.recipe {
-            JustRecipeView(recipe: fetchedRecipe)
-                .navigationTitle(fetchedRecipe.recipeName)
-
-            if authModel.profile.uid == fetchedRecipe.userId {
-                HStack {
-                    Button(action: RecipesDummyData.addDataToFirebase) {
-                        ButtonView(text: "Edit", color: Color.green)
-                    }
-                    .padding(.horizontal, 5.0)
-                    
-                    
-                    Button(action:  {
-                        viewModel.deleteRecipe() {
-                            
+            VStack {
+                JustRecipeView(recipe: fetchedRecipe)
+                    .navigationTitle(fetchedRecipe.recipeName)
+                
+                if authModel.profile.uid == fetchedRecipe.userId {
+                    HStack {
+                        Button(action: RecipesDummyData.addDataToFirebase) {
+                            ButtonView(text: "Edit", color: Color.green)
                         }
-                    }) {
-                        ButtonView(text: "Delete", color: Color.red)
+                        .padding(.horizontal, 5.0)
+                        
+                        
+                        Button(action:  {
+                            viewModel.deleteRecipe() {
+                                
+                            }
+                        }) {
+                            ButtonView(text: "Delete", color: Color.red)
+                        }
+                        .padding(.horizontal, 5.0)
                     }
-                    .padding(.horizontal, 5.0)
+                    .padding()
                 }
-                .padding()
             }
         } else {
             ProgressView()
         }
-
     }
 }
 
+
 #Preview {
-    RecipeView(recipe: RecipesDummyData.ToastRecipe, auth: AuthModel(testProfile: true))
+    RecipeView(
+        recipe: RecipesDummyData.ToastRecipe,
+        auth: AuthModel(testProfile: true)
+        //, isDeleted: false
+    )
 }

@@ -30,7 +30,7 @@ struct ProfileView: View {
                     
                     ScrollView {
                         VStack(spacing: 20) {
-                            ForEach(fetchedRecipes, id: \.recipeName) { recipe in
+                            ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.recipeName) { recipe in
                                 NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
                                     RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
                                 }
@@ -44,7 +44,11 @@ struct ProfileView: View {
                         }
                     }
                 }
-            }.navigationTitle("Profile")
+            }
+            .navigationTitle("Profile")
+            .onAppear {
+                viewModel.fetchUserRecipes(userId: authModel.profile.uid)
+            }
         }
     }
 }

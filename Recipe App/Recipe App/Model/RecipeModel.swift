@@ -21,7 +21,7 @@ enum Category: String, CaseIterable, Identifiable, Codable{
     case drink = "Drink"
 }
 
-struct RecipeModel: Identifiable, Codable {
+struct RecipeModel: Identifiable, Codable, Hashable {
     var id: String
     var userId: String
     var recipeName: String
@@ -30,13 +30,14 @@ struct RecipeModel: Identifiable, Codable {
     var ingredients: [RecipeIngridient]? = nil
     var steps: [Step]? = nil
     var categories: [Category] = []
+    var dateCreated: Date
     
-    struct RecipeIngridient: Codable {
+    struct RecipeIngridient: Codable, Hashable {
         var ingredient: Ingredient
         var quantity: String
     }
     
-    struct Step: Codable {
+    struct Step: Codable, Hashable {
         var stepNumber: Int
         var description: String
         var stepImage: String?

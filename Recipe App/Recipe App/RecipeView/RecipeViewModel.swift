@@ -36,7 +36,9 @@ class RecipeViewModel: ObservableObject {
             recipesRepository.deleteRecipe(recipeId: id) { error in
                 if let error = error {
                     print("Error deleting recipe: \(error.localizedDescription)")
-                } 
+                } else {
+                    completion() 
+                }
             }
         }
     }

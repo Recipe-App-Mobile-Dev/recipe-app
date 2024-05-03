@@ -23,7 +23,7 @@ struct RecipesView: View {
                 ZStack(alignment: .bottomTrailing) {
                     ScrollView {
                         VStack(spacing: 20) {
-                            ForEach(fetchedRecipes, id: \.recipeName) { recipe in
+                            ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.recipeName) { recipe in
                                 NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
                                     RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
                                 }
@@ -56,6 +56,9 @@ struct RecipesView: View {
                             Image(systemName: "magnifyingglass")
                         }
                     )
+                    .onAppear {
+                        viewModel.fetchRecipes()
+                    }
               }
         }
     }
