@@ -52,7 +52,7 @@ struct ProfileView: View {
                 }
             }
             .navigationDestination(for: RecipeModel.self) { recipe in
-                RecipeView(recipe: recipe, auth: authModel, path: $path)
+                LazyView(RecipeView(recipe: recipe, auth: authModel, path: $path))
             }
             .navigationTitle("Profile")
             .onAppear {
