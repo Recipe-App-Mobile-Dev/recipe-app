@@ -29,8 +29,9 @@ struct RecipeModel: Identifiable, Codable, Hashable {
     var recipeDescription: String?
     var ingredients: [RecipeIngridient]? = nil
     var steps: [Step]? = nil
-    var categories: [Category] = []
+    var categories: [Category]?
     var dateCreated: Date
+    var rating: Double?
     
     struct RecipeIngridient: Codable, Hashable {
         var ingredient: Ingredient

@@ -14,9 +14,9 @@ struct ButtonView: View {
     
     var body: some View {
         Text(text)
-            .frame(width: UIScreen.main.bounds.width * 0.3)
+            .frame(width: UIScreen.main.bounds.width * 0.25)
             .padding(.horizontal)
-            .padding(.vertical, 10.0)
+            .padding(.vertical, 8.0)
             .background(color)
             .cornerRadius(10.0)
             .foregroundColor(Color.white)

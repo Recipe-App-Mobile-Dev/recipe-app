@@ -10,11 +10,12 @@ import Firebase
 
 struct ContentView: View {
     @StateObject var authModel: AuthModel = AuthModel()
+    @State var path = NavigationPath()
     
     var body: some View {
-        NavigationView {
+        NavigationStack (path: $path) {
             if authModel.isSignedIn {
-                RecipesView(authModel: authModel)
+                RecipesView(authModel: authModel, path: $path)
             } else {
                 LoginView(authModel: authModel)
             }
