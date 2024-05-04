@@ -25,6 +25,7 @@ struct ProfileView: View {
                 VStack {
                     HStack {
                         ProfileCardView(profile: authModel.profile)
+                        Spacer()
                         Image(systemName: "pencil")
                             .padding(.trailing, 20)
                         

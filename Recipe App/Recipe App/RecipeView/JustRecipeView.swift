@@ -10,6 +10,7 @@ import SwiftUI
 
 struct JustRecipeView: View {
     @State var recipe: RecipeModel
+    @State var profile: UserProfile?
     
     var body: some View {
         GeometryReader { geometry in
@@ -28,6 +29,17 @@ struct JustRecipeView: View {
                     }
                 }
                 
+                if let profile = profile {
+                    ProfileCardView(profile: profile)
+                }
+                
+                if let recipeDescription = recipe.recipeDescription {
+                    Text(recipeDescription)
+                        .foregroundColor(Color(.darkGray))
+                        .padding()
+                }
+                
+                
                 if let categories = recipe.categories {
                     VStack {
                         ForEach(0..<categories.count/3+1) { row in
@@ -38,12 +50,6 @@ struct JustRecipeView: View {
                             }
                         }
                     }
-                }
-                
-                if let recipeDescription = recipe.recipeDescription {
-                    Text(recipeDescription)
-                        .foregroundColor(Color(.darkGray))
-                        .padding()
                 }
                 
                 if let ingredients = recipe.ingredients {
@@ -81,5 +87,8 @@ struct JustRecipeView: View {
 }
 
 #Preview {
-    JustRecipeView(recipe: RecipesDummyData.ToastRecipe)
+    JustRecipeView(
+        recipe: RecipesDummyData.ToastRecipe,
+        profile: AuthModel(testProfile: true).profile
+    )
 }

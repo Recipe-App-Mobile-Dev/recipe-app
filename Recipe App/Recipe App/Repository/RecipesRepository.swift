@@ -325,7 +325,6 @@ class RecipesRepository: ObservableObject {
             
             for document in querySnapshot!.documents {
                 if let rate = document["stars"] as? Double {
-                    //print(rate)
                     ratingArray.append(rate)
                 }
             }
@@ -333,7 +332,6 @@ class RecipesRepository: ObservableObject {
             if ratingArray.count > 0 {
                 var arraySum = ratingArray.reduce(0, +)
                 var rating = Double(arraySum)/Double(ratingArray.count)
-                //print("done", rating)
                 completion(rating, nil)
             } else {
                 completion(nil, error)
@@ -430,10 +428,6 @@ class RecipesRepository: ObservableObject {
     
     func fetchUsersRecipeRating(recipeId: String, userId: String, completion: @escaping (_ rating: Int?, _ error: Error?) -> Void) {
         let recipeIngredientsPath = "recipes/" + recipeId + "/rating"
-        
-        print(recipeId)
-        print(userId)
-        print(recipeIngredientsPath)
         db.collection(recipeIngredientsPath).whereField("userId", isEqualTo: userId).getDocuments { documents, error in
             guard error == nil else {
                 print("error getting user rating", error ?? "")

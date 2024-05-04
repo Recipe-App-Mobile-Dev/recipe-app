@@ -11,6 +11,7 @@ import SwiftUI
 class RecipeViewModel: ObservableObject {
     @ObservedObject var authModel: AuthModel
     @Published var recipe: RecipeModel?
+    @Published var userProfile: UserProfile?
     @Published var isDeleted: Bool = false
     @Published var isEditing: Bool = false
     @Published var userRating: Int?
@@ -18,11 +19,13 @@ class RecipeViewModel: ObservableObject {
     @Published var deletionAlert: Bool = false
     @Published var ratingAlert: Bool = false
     private var recipesRepository = RecipesRepository()
+    private var usersRepository = UserProfileRepository()
     
     
     init(recipe: RecipeModel, auth: AuthModel) {
         self.authModel = auth
         fetchRecipe(recipe: recipe)
+        fetchUser(user: recipe.userId)
     }
     
     
@@ -34,6 +37,22 @@ class RecipeViewModel: ObservableObject {
                 return
             } else {
                 self.recipe = recipe
+            }
+        }
+    }
+    
+    
+    func fetchUser(user: String) {
+        usersRepository.fetchProfile(userId: user) { (profile, error) in
+            if let error = error {
+                print("Error while fetching the user profile: \(error)")
+                return
+            }
+            
+            if let profile = profile {
+                self.userProfile = profile
+            } else {
+                print("Error: User profile not found.")
             }
         }
     }

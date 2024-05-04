@@ -24,7 +24,7 @@ struct RecipeView: View {
         if let fetchedRecipe = viewModel.recipe {
             if isEditing == false {
                 VStack {
-                    JustRecipeView(recipe: fetchedRecipe)
+                    JustRecipeView(recipe: fetchedRecipe, profile: viewModel.userProfile)
                         .navigationTitle(fetchedRecipe.recipeName)
                     
                     if viewModel.authModel.profile.uid == fetchedRecipe.userId {
