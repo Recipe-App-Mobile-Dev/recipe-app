@@ -19,46 +19,44 @@ struct ProfileView: View {
         _path = path
     }
 
-    var body: some View {        
-        if let fetchedRecipes = viewModel.recipes {
-            ScrollView {
-                VStack {
-                    HStack {
-                        ProfileCardView(profile: authModel.profile)
-                        Spacer()
-                        Image(systemName: "pencil")
-                            .padding(.trailing, 20)
-                        
-                    }.padding(.top, 30)
+    var body: some View {
+        ScrollView {
+            VStack {
+                HStack {
+                    ProfileCardView(profile: authModel.profile)
+                    Spacer()
+                    Image(systemName: "pencil")
+                        .padding(.trailing, 20)
                     
+                }.padding(.top, 30)
+                if let fetchedRecipes = viewModel.recipes {
                     VStack(spacing: 20) {
                         ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
                             NavigationLink(value: recipe) {
-                                RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
+                                RecipeCardView(recipe: recipe)
                             }
                         }
                     }
-                    
                     .padding()
                     .padding(.top, 20)
-                    
-                    Button("Log Out") {
-                        authModel.signOut()
-                    }
-                    
-                    Button("TEST add dummy recipe") {
-                        RecipesDummyData.addDataToFirebase()
-                    }
-                    .padding()
                 }
+                
+                Button("Log Out") {
+                    authModel.signOut()
+                }
+                
+                Button("TEST add dummy recipe") {
+                    RecipesDummyData.addDataToFirebase()
+                }
+                .padding()
             }
-            .navigationDestination(for: RecipeModel.self) { recipe in
-                LazyView(RecipeView(recipe: recipe, auth: authModel, path: $path))
-            }
-            .navigationTitle("Profile")
-            .onAppear {
-                viewModel.fetchUserRecipes(userId: authModel.profile.uid)
-            }
+        }
+        .navigationDestination(for: RecipeModel.self) { recipe in
+            LazyView(RecipeView(recipe: recipe, auth: authModel, path: $path))
+        }
+        .navigationTitle("Profile")
+        .onAppear {
+            viewModel.fetchUserRecipes(userId: authModel.profile.uid)
         }
     }
 }
