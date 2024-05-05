@@ -16,15 +16,15 @@ class RecipesDummyData {
         recipeDescription: "So simple. It's just toast, spread with cheese, topped with sliced fresh garden tomatoes, and sprinkled with coarse salt and freshly ground black pepper.",
         ingredients: [
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "TK64liqxdDmlkODMrtOP", ingredientName: "Tomatoes", imageName: "Tomato"),
+                ingredient: Ingredient(id: "TK64liqxdDmlkODMrtOP", ingredientName: "Tomatoes", imageName: "Tomato.jpeg"),
                 quantity: "500g"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "8s4sJgwMfjRF1fQGeeNt", ingredientName: "Bread", imageName: "bread"),
+                ingredient: Ingredient(id: "8s4sJgwMfjRF1fQGeeNt", ingredientName: "Bread", imageName: "bread.jpg"),
                 quantity: "2 pieces"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "e3WTv0Q7ou3jdyI1Ykgn", ingredientName: "Soft cheese", imageName: "softcheese"),
+                ingredient: Ingredient(id: "e3WTv0Q7ou3jdyI1Ykgn", ingredientName: "Soft cheese", imageName: "softcheese.jpeg"),
                 quantity: "2 tsp"
             )
         ],
@@ -32,20 +32,22 @@ class RecipesDummyData {
             RecipeModel.Step(
                 stepNumber: 1,
                 description: "Use a toaster or toaster oven to toast the bread.",
-                stepImage: "toastintheoven"
+                stepImage: "toastintheoven.jpg"
             ),
             RecipeModel.Step(
                 stepNumber: 2,
                 description: "While the bread is toasting, slice the tomato into 1/4-inch slices.",
-                stepImage: "slicetomatoes"
+                stepImage: "slicetomatoes.jpeg"
             ),
             RecipeModel.Step(
                 stepNumber: 3,
                 description: "Once the bread is lightly toasted, spread the cheese on toasts. Top them with a couple slices of tomato, overlapping if necessary.",
-                stepImage: "finish"
+                stepImage: "finish.jpeg"
             )
         ],
-        categories: [.breakfast, .appetizer]
+        categories: [.breakfast, .appetizer],
+        dateCreated: Calendar.current.date(from: DateComponents(year: 2024, month: 1, day: 1, hour: 12, minute: 0))!,
+        rating: 4.92304
     )
     
     public static var SmoothieRecipe: RecipeModel = RecipeModel(
@@ -80,7 +82,9 @@ class RecipesDummyData {
                  stepImage: "smoothie.jpeg"
              )
          ],
-         categories: [.drink]
+         categories: [.drink],
+         dateCreated: Calendar.current.date(from: DateComponents(year: 2024, month: 1, day: 2, hour: 12, minute: 0))!,
+         rating: 4.2340
      )
 
      public static var SaladRecipe: RecipeModel = RecipeModel(
@@ -124,7 +128,8 @@ class RecipesDummyData {
                  stepImage: "pastasalad.jpeg"
              )
          ],
-         categories: [.breakfast, .salad, .side]
+         categories: [.breakfast, .salad, .side],
+         dateCreated: Calendar.current.date(from: DateComponents(year: 2024, month: 1, day: 3, hour: 12, minute: 0))!
      )
     
     public static var recipes: [RecipeModel] = [ToastRecipe, SmoothieRecipe, SaladRecipe]

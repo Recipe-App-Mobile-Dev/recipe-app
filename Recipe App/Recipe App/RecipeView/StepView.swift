@@ -41,7 +41,7 @@ struct StepView: View {
         step: RecipeModel.Step(
             stepNumber: 1,
             description: "Use a toaster or toaster oven to toast the bread.",
-            stepImage: "toastintheoven"
+            stepImage: "toastintheoven.jpg"
         )
     )
 }

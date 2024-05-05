@@ -10,11 +10,13 @@ import Foundation
 
 struct RecipesView: View {
     @ObservedObject var viewModel: RecipesViewModel
+    @Binding var path: NavigationPath
     var authModel: AuthModel
 
-    init(test: Bool? = false, authModel: AuthModel) {
+    init(test: Bool? = false, authModel: AuthModel, path: Binding<NavigationPath>) {
         viewModel = RecipesViewModel(test: test)
         self.authModel = authModel
+        _path = path
     }
 
     var body: some View {
@@ -22,9 +24,13 @@ struct RecipesView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .bottomTrailing) {
                     ScrollView {
+                        Button("TEST add dummy recipe") {
+                            RecipesDummyData.addDataToFirebase()
+                        }
+                        
                         VStack(spacing: 20) {
-                            ForEach(fetchedRecipes, id: \.recipeName) { recipe in
-                                NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
+                            ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
+                                NavigationLink(value: recipe) {
                                     RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
                                 }
                             }
@@ -44,19 +50,26 @@ struct RecipesView: View {
                     .padding([.trailing, .bottom], 20)
                     .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height, alignment: .bottomTrailing)
                     
+                }
+                .navigationBarTitle("App Name", displayMode: .inline)
+                .navigationBarItems(
+                    leading: NavigationLink(value: authModel.profile) {
+                        Image(systemName: "person")
+                    },
+                    trailing: Button(action: {
+                        // Action for searching
+                    }) {
+                        Image(systemName: "magnifyingglass")
                     }
-                    .navigationBarTitle("App Name", displayMode: .inline)
-                    .navigationBarItems(
-                        leading: NavigationLink(destination: ProfileView(authModel: authModel)) {
-                            Image(systemName: "person")
-                        },
-                        trailing: Button(action: {
-                            // Action for searching
-                        }) {
-                            Image(systemName: "magnifyingglass")
-                        }
-                    )
-              }
+                )
+                .navigationDestination(for: UserProfile.self) { profile in
+                    ProfileView(authModel: authModel, path: $path)
+                }
+                .navigationDestination(for: RecipeModel.self) { recipe in
+                    LazyView(RecipeView(recipe: recipe, auth: authModel, path: $path))
+                }
+                .onAppear { viewModel.fetchRecipes() }
+            }
         }
     }
 }
@@ -73,6 +86,13 @@ struct LazyView<Content: View>: View {
 
 struct RecipesView_Previews: PreviewProvider {
     static var previews: some View {
-        RecipesView(test: true, authModel: AuthModel())
+        RecipesView(
+            test: true,
+            authModel: AuthModel(),
+            path: Binding<NavigationPath>(
+                get: { return NavigationPath() },
+                set: { _ in }
+            )
+        )
     }
 }

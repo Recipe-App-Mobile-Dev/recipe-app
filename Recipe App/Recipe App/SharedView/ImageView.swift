@@ -17,7 +17,9 @@ struct LoadImageView: View {
     var body: some View {
         VStack {
             if isLoading {
-                ProgressView()
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .modifier(ShimmerEffect())
             } else {
                 if let image = loadedImage {
                     image
@@ -37,6 +39,32 @@ struct LoadImageView: View {
                 isLoading = false
             }
         }
+    }
+}
+
+struct ShimmerEffect: ViewModifier {
+    @State private var isAnimating = false
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                GeometryReader { geometry in
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.gray.opacity(0.3), Color.gray.opacity(0.6), Color.gray.opacity(0.3)]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .mask(content)
+                        .offset(x: isAnimating ? geometry.size.width : -geometry.size.width)
+                        .animation(Animation.linear(duration: 2.0).repeatForever(autoreverses: false))
+                }
+            )
+            .onAppear {
+                isAnimating = true
+            }
     }
 }
 

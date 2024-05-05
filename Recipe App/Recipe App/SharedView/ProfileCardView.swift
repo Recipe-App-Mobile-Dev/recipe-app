@@ -23,7 +23,6 @@ struct ProfileCardView: View {
                     .font(.headline)
             }
             .padding(.leading)
-            Spacer()
         }.padding()
     }
 }

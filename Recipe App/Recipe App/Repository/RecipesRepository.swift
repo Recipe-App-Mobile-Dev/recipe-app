@@ -15,11 +15,26 @@ class RecipesRepository: ObservableObject {
     
     func addRecipe(recipe: RecipeModel, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
         let collectionRef = db.collection("recipes")
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        let dateString = dateFormatter.string(from: Date())
+        
+        var stringCategories: [String]?
+        if let enumCategories = recipe.categories {
+            print(enumCategories)
+            stringCategories = enumCategories.map { $0.rawValue }
+            print(stringCategories)
+        }
+        
         let data: [String: Any] = [
             "userId": recipe.userId,
             "recipeName": recipe.recipeName,
             "imageName": recipe.imageName,
-            "recipeDescription": recipe.recipeDescription ?? nil
+            "recipeDescription": recipe.recipeDescription ?? nil,
+            "categories": stringCategories ?? nil,
+            "dateCreated": dateString
         ]
         
         let docRef = collectionRef.addDocument(data: data) { error in
@@ -121,7 +136,26 @@ class RecipesRepository: ObservableObject {
     }
     
     
+    func addRecipeRating(stars: Int, recipeId: String, userId: String, completion: @escaping (_ error: Error?) -> Void) {
+        let data: [String: Any] = [
+            "userId": userId,
+            "stars": stars
+        ]
+        let recipeIngredientsPath = "recipes/" + recipeId + "/rating"
+        
+        let docRef = db.collection(recipeIngredientsPath).addDocument(data: data) { error in
+            if let error = error {
+                print("Error adding document: \(error)")
+                return
+            }
+            
+            completion(error)
+        }
+    }
+    
+    
     func fetchRecipes(completion: @escaping (_ recipe: [RecipeModel]?, _ error: Error?) -> Void) {
+        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
         db.collection("recipes").getDocuments() { (querySnapshot, error) in
             guard error == nil else {
                 print("error getting recipes", error ?? "")
@@ -131,21 +165,55 @@ class RecipesRepository: ObservableObject {
             var recipesArray: [RecipeModel] = []
             
             for document in querySnapshot!.documents {
-                let recipe = RecipeModel(
-                    id: document.documentID as String,
-                    userId: document["userId"] as? String ?? "",
-                    recipeName: document["recipeName"] as? String ?? "",
-                    imageName: document["imageName"] as? String ?? "",
-                    recipeDescription: document["recipeDescription"] as? String ?? ""
-                )
-                recipesArray.append(recipe)
-            }
+                if let dateString = document["dateCreated"] as? String {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                    if let date = dateFormatter.date(from: dateString) {
+                        var recipe = RecipeModel(
+                            id: document.documentID as String,
+                            userId: document["userId"] as? String ?? "",
+                            recipeName: document["recipeName"] as? String ?? "",
+                            imageName: document["imageName"] as? String ?? "",
+                            recipeDescription: document["recipeDescription"] as? String ?? nil,
+                            categories: document["categories"] as? [Category] ?? nil,
+                            dateCreated: date
+                        )
+                        
+                        if let categoriesArray = document["categories"] as? [String] ?? nil {
+                            var enumCategories = categoriesArray.compactMap { Category(rawValue: $0) }
+                            recipe.categories = enumCategories
+                        }
+                        
+                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        self.fetchRecipeRating(recipeId: document.documentID) { rating, error in
+                            defer {
+                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                            }
+                            
+                            guard error == nil else {
+                                print("error getting rating", error ?? "")
+                                return
+                            }
+                            
+                            if let rating = rating {
+                                recipe.rating = rating
+                            }
+                            
+                            recipesArray.append(recipe)
+                        }
+                    }
+                }
             
-            completion(recipesArray, error)
+                dispatchGroup.notify(queue: .main) {
+                    completion(recipesArray, nil)
+                }
+            }
         }
     }
     
+    
     func fetchUserRecipes(userId: String, completion: @escaping (_ recipe: [RecipeModel]?, _ error: Error?) -> Void) {
+        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
         db.collection("recipes").whereField("userId", isEqualTo: userId).getDocuments { (querySnapshot, error) in
             guard let querySnapshot = querySnapshot, error == nil else {
                 print("Error getting recipes: \(error?.localizedDescription ?? "")")
@@ -156,25 +224,56 @@ class RecipesRepository: ObservableObject {
             var recipesArray: [RecipeModel] = []
 
             for document in querySnapshot.documents {
-                let recipe = RecipeModel(
-                    id: document.documentID,
-                    userId: document["userId"] as? String ?? "",
-                    recipeName: document["recipeName"] as? String ?? "",
-                    imageName: document["imageName"] as? String ?? "",
-                    recipeDescription: document["recipeDescription"] as? String ?? ""
-                )
-                recipesArray.append(recipe)
+                if let dateString = document["dateCreated"] as? String {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                    if let date = dateFormatter.date(from: dateString) {
+                        var recipe = RecipeModel(
+                            id: document.documentID as String,
+                            userId: document["userId"] as? String ?? "",
+                            recipeName: document["recipeName"] as? String ?? "",
+                            imageName: document["imageName"] as? String ?? "",
+                            recipeDescription: document["recipeDescription"] as? String ?? nil,
+                            dateCreated: date
+                        )
+                        
+                        if let categoriesArray = document["categories"] as? [String] ?? nil {
+                            var enumCategories = categoriesArray.compactMap { Category(rawValue: $0) }
+                            recipe.categories = enumCategories
+                        }
+                        
+                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        self.fetchRecipeRating(recipeId: document.documentID) { rating, error in
+                            defer {
+                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                            }
+                            
+                            guard error == nil else {
+                                print("error getting rating", error ?? "")
+                                return
+                            }
+                            
+                            if let rating = rating {
+                                recipe.rating = rating
+                            }
+                            
+                            recipesArray.append(recipe)
+                        }
+                    }
+                }
+                
+                dispatchGroup.notify(queue: .main) {
+                    completion(recipesArray, nil)
+                }
             }
-
-            completion(recipesArray, nil)
         }
     }
     
     
     func fetchRecipeInfo(forRecipe: RecipeModel, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
         let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
-        var steps: [RecipeModel.Step]? = []
         
+        var steps: [RecipeModel.Step]? = []
         dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
         self.fetchSteps(recipeId: forRecipe.id) { (recipeSteps, error) in
             defer {
@@ -209,6 +308,33 @@ class RecipesRepository: ObservableObject {
                 recipe.ingredients = ingredients
                 recipe.steps = steps
                 completion(recipe, nil)
+            }
+        }
+    }
+    
+    
+    func fetchRecipeRating(recipeId: String, completion: @escaping (_ rating: Double?, _ error: Error?) -> Void) {
+        let recipeIngredientsPath = "recipes/" + recipeId + "/rating"
+        db.collection(recipeIngredientsPath).getDocuments() { (querySnapshot, error) in
+            guard error == nil else {
+                print("error getting recipe ingredient", error ?? "")
+                return
+            }
+            
+            var ratingArray: [Double] = []
+            
+            for document in querySnapshot!.documents {
+                if let rate = document["stars"] as? Double {
+                    ratingArray.append(rate)
+                }
+            }
+            
+            if ratingArray.count > 0 {
+                var arraySum = ratingArray.reduce(0, +)
+                var rating = Double(arraySum)/Double(ratingArray.count)
+                completion(rating, nil)
+            } else {
+                completion(nil, error)
             }
         }
     }
@@ -300,11 +426,32 @@ class RecipesRepository: ObservableObject {
         }
     }
     
+    func fetchUsersRecipeRating(recipeId: String, userId: String, completion: @escaping (_ rating: Int?, _ error: Error?) -> Void) {
+        let recipeIngredientsPath = "recipes/" + recipeId + "/rating"
+        db.collection(recipeIngredientsPath).whereField("userId", isEqualTo: userId).getDocuments { documents, error in
+            guard error == nil else {
+                print("error getting user rating", error ?? "")
+                return
+            }
+            
+            if let documents = documents {
+                for document in documents.documents {
+                    if let rate = document["stars"] as? Int {
+                        completion(rate, nil)
+                    }
+                }
+            } else {
+                completion(nil, error)
+            }
+        }
+    }
+    
     func deleteRecipe(recipeId: String, completion: @escaping (_ error: Error?) -> Void) {
         let steps = "recipes/\(recipeId)/steps"
         deleteCollection(collectionName: steps) { error in
             if let error = error {
                 print("Error deleting collection: \(error.localizedDescription)")
+                return
             } else {
                 print("Collection deleted successfully.")
             }
@@ -314,6 +461,7 @@ class RecipesRepository: ObservableObject {
         deleteCollection(collectionName: ingredients) { error in
             if let error = error {
                 print("Error deleting collection: \(error.localizedDescription)")
+                return
             } else {
                 print("Collection deleted successfully.")
             }
@@ -322,9 +470,11 @@ class RecipesRepository: ObservableObject {
         let docRef = db.collection("recipes").document(recipeId).delete { error in
             if let error = error {
                 print("Error deleting document: \(error)")
-                return
+                completion(error)
             }
         }
+        
+        completion(nil)
     }
     
     func deleteCollection(collectionName: String, batchSize: Int = 100, completion: @escaping (Error?) -> Void) {

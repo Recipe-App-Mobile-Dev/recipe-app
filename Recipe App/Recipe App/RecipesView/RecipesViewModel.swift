@@ -16,6 +16,7 @@ class RecipesViewModel: ObservableObject {
             self.recipes = RecipesDummyData.recipes
         } else {
             fetchRecipes()
+            print("Logged in")
         }
     }
     
