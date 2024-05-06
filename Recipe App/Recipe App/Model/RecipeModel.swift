@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum Category: String, CaseIterable, Identifiable, Codable{
     var id: String { self.rawValue }
@@ -43,5 +44,25 @@ struct RecipeModel: Identifiable, Codable, Hashable {
         var description: String
         var stepImage: String?
     }
+}
 
+struct NewRecipeModel {
+    var userId: String
+    var recipeName: String
+    var imageName: Image?
+    var recipeDescription: String
+    var ingredients: [RecipeIngridient]?
+    var steps: [Step]?
+    var categories: [Category]?
+    
+    struct RecipeIngridient  {
+        var ingredient: NewIngredient
+        var quantity: String
+    }
+    
+    struct Step: Codable, Hashable {
+        var stepNumber: Int
+        var description: String
+        var stepImage: String?
+    }
 }
