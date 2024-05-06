@@ -17,7 +17,7 @@ class ImagesRepository: ObservableObject {
     func getImage(name: String, completion: @escaping (Image?) -> Void) {
         let imageRef = storageRef.child(name)
         
-        imageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
+        imageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
             if let error = error {
                 print("Error downloading image: \(error.localizedDescription)")
                 completion(nil)

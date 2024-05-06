@@ -10,10 +10,9 @@ import SwiftUI
 
 struct ProfileCardView: View {
     @State var profile: UserProfile
-    
     var body: some View {
         HStack {
-            LoadImageView(imageName: "profiles/" + profile.icon)
+            LoadImageView(imageName: "profiles/\(profile.uid)/profile.jpg", defaultImage: Image("defaultIcon"))
                 .scaledToFill()
                 .clipShape(Circle())
                 .frame(width: 60, height: 60)

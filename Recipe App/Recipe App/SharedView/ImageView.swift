@@ -10,9 +10,15 @@ import SwiftUI
 
 struct LoadImageView: View {
     let imageName: String
+    let defaultImage: Image
     @State private var isLoading = true
     @State private var loadedImage: Image?
     var imagesRepository = ImagesRepository()
+    
+    init(imageName: String, defaultImage: Image = Image("defaultImage")) {
+        self.imageName = imageName
+        self.defaultImage = defaultImage
+    }
 
     var body: some View {
         VStack {
@@ -21,10 +27,8 @@ struct LoadImageView: View {
                     .fill(Color.gray.opacity(0.3))
                     .modifier(ShimmerEffect())
             } else {
-                if let image = loadedImage {
-                    image
-                        .resizable()
-                }
+                (loadedImage ?? defaultImage)
+                    .resizable()
             }
         }
         .onAppear {
