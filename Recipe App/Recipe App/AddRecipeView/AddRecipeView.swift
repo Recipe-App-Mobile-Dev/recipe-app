@@ -13,7 +13,7 @@ struct AddRecipeView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var isShowingImagePicker = false
     @State private var isShowingIngredientImagePicker = false
-    @State private var selectedIngredientIndex: Int?
+    @State private var selectedIngredientIndex: Int = 0
 
     init(auth: AuthModel) {
         viewModel = AddRecipeViewModel(auth: auth)
@@ -29,7 +29,8 @@ struct AddRecipeView: View {
                     Button(action: {
                         isShowingImagePicker = true
                     }) {
-                        VStack {
+                        HStack{
+                            Spacer()
                             if let image = viewModel.image {
                                 Image(uiImage: image)
                                     .resizable()
@@ -42,16 +43,17 @@ struct AddRecipeView: View {
                                     .frame(width: 100, height: 100)
                                     .foregroundColor(.blue)
                             }
+                            Spacer()
                         }
                     }
                 }
                 Section(header: Text("Ingredients")) {
                     ForEach(viewModel.ingredientRows.indices, id: \.self) { rowIndex in
-                        Button(action: {
-                            selectedIngredientIndex = rowIndex
-                            isShowingIngredientImagePicker = true
-                        }) {
-                            HStack {
+                        HStack {
+                            Button(action: {
+                                selectedIngredientIndex = rowIndex
+                                isShowingIngredientImagePicker = true
+                            }) {
                                 if let image = viewModel.ingredientRows[rowIndex].image {
                                     Image(uiImage: image)
                                         .resizable()
@@ -64,11 +66,9 @@ struct AddRecipeView: View {
                                         .frame(width: 50, height: 50)
                                         .foregroundColor(.blue)
                                 }
-                                HStack {
-                                    TextField("Ingredient Name", text: $viewModel.ingredientRows[rowIndex].ingredient)
-                                    TextField("Amount", text: $viewModel.ingredientRows[rowIndex].quantity)
-                                }
-                                .padding()                            }
+                            }
+                            TextField("Ingredient Name", text: $viewModel.ingredientRows[rowIndex].ingredient)
+                            TextField("Amount", text: $viewModel.ingredientRows[rowIndex].quantity)
                         }
                     }
                     Button("Add Ingredient", action: viewModel.addIngredientRow)
@@ -116,12 +116,8 @@ struct AddRecipeView: View {
             .sheet(isPresented: $isShowingImagePicker) {
                 ImagePicker(image: $viewModel.image)
             }
-            .sheet(isPresented: $isShowingIngredientImagePicker, onDismiss: {
-                selectedIngredientIndex = nil
-            }) {
-                if let index = selectedIngredientIndex {
-                    ImagePicker(image: $viewModel.ingredientRows[index].image)
-                }
+            .sheet(isPresented: $isShowingIngredientImagePicker) {
+                ImagePicker(image: $viewModel.ingredientRows[selectedIngredientIndex].image)
             }
         }
     }

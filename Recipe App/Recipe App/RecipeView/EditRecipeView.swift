@@ -28,7 +28,7 @@ struct EditRecipeView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                LoadImageView(imageName: "recipes/" + editingRecipe.imageName)
+                LoadImageView(imageName: editingRecipe.imageName)
                     .aspectRatio(contentMode: .fill)
                     .frame(width: geometry.size.width - 40, height: 300)
                     .cornerRadius(10)

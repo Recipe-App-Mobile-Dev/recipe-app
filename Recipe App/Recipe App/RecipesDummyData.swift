@@ -12,7 +12,7 @@ class RecipesDummyData {
         id: "kIBFyJd7Rotf5bXJt18A",
         userId: "8t4KSPZAvzclXoCzBpOQZifge0m2",
         recipeName: "Tomato Toast",
-        imageName: "toasts.jpg",
+        imageName: "recipes/toasts.jpg",
         recipeDescription: "So simple. It's just toast, spread with cheese, topped with sliced fresh garden tomatoes, and sprinkled with coarse salt and freshly ground black pepper.",
         ingredients: [
             RecipeModel.RecipeIngridient(
@@ -54,7 +54,7 @@ class RecipesDummyData {
          id: "LjxL6YXqysgGoiO0BtII",
          userId: "8t4KSPZAvzclXoCzBpOQZifge0m2",
          recipeName: "Green Smoothie _ delete later",
-         imageName: "smoothie.jpeg",
+         imageName: "recipes/smoothie.jpeg",
          recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
          ingredients: [
             RecipeModel.RecipeIngridient(
@@ -91,7 +91,7 @@ class RecipesDummyData {
          id: "Ul4yz7gmnE5Ag9mDb1NW",
          userId: "CZpkmBv7HqNpisSOMo6VLqiP0Us2",
          recipeName: "Pasta Salad",
-         imageName: "pastasalad.jpeg",
+         imageName: "recipes/pastasalad.jpeg",
          recipeDescription: "A tasty pasta salad packed with cucumbers, tomatoes, and a light vinaigrette. Perfect for picnics or a quick lunch.",
          ingredients: [
             RecipeModel.RecipeIngridient(
