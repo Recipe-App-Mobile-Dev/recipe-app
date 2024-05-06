@@ -17,5 +17,5 @@ struct Ingredient: Hashable, Codable {
 
 struct NewIngredient {
     var ingredientName: String
-    var image: Image?
+    var image: UIImage?
 }

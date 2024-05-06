@@ -10,7 +10,7 @@ import SwiftUI
 import UIKit
 
 struct IngredientData {
-    var image: Image?
+    var image: UIImage?
     var ingredient: String
     var quantity: String
 }
@@ -19,7 +19,7 @@ class AddRecipeViewModel: ObservableObject {
     @ObservedObject var authModel: AuthModel
     @Published var name: String = ""
     @Published var description: String = ""
-    @Published var image: Image?
+    @Published var image: UIImage?
     @Published var isShowingImagePicker = false
     @Published var isShowingImagePicker2 = false
     @Published var selectedIngredientIndex = 0
@@ -71,41 +71,4 @@ class AddRecipeViewModel: ObservableObject {
             }
         }
     }
-}
-
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: Image?
-    @Binding var isPresented: Bool
-
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let parent: ImagePicker
-
-        init(parent: ImagePicker) {
-            self.parent = parent
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let uiImage = info[.originalImage] as? UIImage {
-                parent.image = Image(uiImage: uiImage)
-            }
-
-            parent.isPresented = false
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.isPresented = false
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(parent: self)
-    }
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 }

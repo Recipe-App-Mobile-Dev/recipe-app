@@ -12,25 +12,26 @@ struct AddRecipeView: View {
     @ObservedObject var viewModel: AddRecipeViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var isShowingImagePicker = false
-    @State private var isShowingImagePicker2 = false
-    
+    @State private var isShowingIngredientImagePicker = false
+    @State private var selectedIngredientIndex: Int?
+
     init(auth: AuthModel) {
         viewModel = AddRecipeViewModel(auth: auth)
     }
     
     var body: some View {
-        NavigationView{
-            Form{
-                Section(header: Text("Name")){
-                    TextField("Recip Name", text: $viewModel.name)
+        NavigationView {
+            Form {
+                Section(header: Text("Name")) {
+                    TextField("Recipe Name", text: $viewModel.name)
                 }
                 Section(header: Text("Image")) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.clear, lineWidth: 0)
+                    Button(action: {
+                        isShowingImagePicker = true
+                    }) {
                         VStack {
-                            if let _ = viewModel.image {
-                                viewModel.image?
+                            if let image = viewModel.image {
+                                Image(uiImage: image)
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 100, height: 100)
@@ -41,69 +42,36 @@ struct AddRecipeView: View {
                                     .frame(width: 100, height: 100)
                                     .foregroundColor(.blue)
                             }
-                            Button(action: {
-                                viewModel.isShowingImagePicker = true
-                            }) {
-                                Text("Add Image")
-                            }
                         }
                     }
                 }
-                Section(header: Text("Description")){
-                    TextEditor(text: $viewModel.description)
-                }
-                Section(header: Text("Ingredients")){
-                    ForEach(viewModel.ingredientRows.indices, id:\.self) { rowIndex in
-                        VStack {
+                Section(header: Text("Ingredients")) {
+                    ForEach(viewModel.ingredientRows.indices, id: \.self) { rowIndex in
+                        Button(action: {
+                            selectedIngredientIndex = rowIndex
+                            isShowingIngredientImagePicker = true
+                        }) {
                             HStack {
-                                viewModel.ingredientRows[rowIndex].image?
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 65, height: 65)
-                                    .padding()
-                                
-                                Button(action: {
-                                    viewModel.isShowingImagePicker2 = true
-                                    viewModel.selectedIngredientIndex = rowIndex
-                                }) {
-                                    Text("Ingredient Image")
-                                        .foregroundStyle(.cyan)
-                                    
+                                if let image = viewModel.ingredientRows[rowIndex].image {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 50, height: 50)
+                                } else {
+                                    Image(systemName: "photo.on.rectangle.angled")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(.blue)
                                 }
-                            }
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .stroke(.blue, lineWidth: 2)
-                            )
-                            .padding()
-                            
-                            HStack {
-                                TextField("Ingredient Name", text: $viewModel.ingredientRows[rowIndex].ingredient)
-                                    .padding()
-                            }
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.blue, lineWidth: 2)
-                            )
-                            .padding()
-                            
-                            HStack {
-                                TextField("Amount", text: $viewModel.ingredientRows[rowIndex].quantity)
-                                    .padding()
-                            }
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.blue, lineWidth: 2)
-                            )
-                            .padding()
+                                HStack {
+                                    TextField("Ingredient Name", text: $viewModel.ingredientRows[rowIndex].ingredient)
+                                    TextField("Amount", text: $viewModel.ingredientRows[rowIndex].quantity)
+                                }
+                                .padding()                            }
                         }
                     }
-
-                    Button(action: {
-                        viewModel.addIngredientRow()
-                    }) {
-                        Text("Add Ingredient")
-                    }
+                    Button("Add Ingredient", action: viewModel.addIngredientRow)
                 }
                 Section(header: Text("Directions")) {
                     ForEach(viewModel.procedures.indices, id:\.self) { index in
@@ -137,7 +105,6 @@ struct AddRecipeView: View {
                 }
             }
             .navigationTitle("New Recipe")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .bottomBar) {
                    Button("Done") {
@@ -146,22 +113,19 @@ struct AddRecipeView: View {
                     }
                 }
             }
-            .sheet(isPresented: $viewModel.isShowingImagePicker2) {
-                ImagePicker(image: $viewModel.ingredientRows[viewModel.selectedIngredientIndex].image, isPresented: $viewModel.isShowingImagePicker2)
+            .sheet(isPresented: $isShowingImagePicker) {
+                ImagePicker(image: $viewModel.image)
             }
-            .sheet(isPresented: $viewModel.isShowingImagePicker) {
-                ImagePicker(image: $viewModel.image, isPresented: $viewModel.isShowingImagePicker)
-            }
-
-
-
-
-
-
-
+            .sheet(isPresented: $isShowingIngredientImagePicker, onDismiss: {
+                selectedIngredientIndex = nil
+            }) {
+                if let index = selectedIngredientIndex {
+                    ImagePicker(image: $viewModel.ingredientRows[index].image)
                 }
             }
         }
+    }
+}
         
 struct AddRecipeView_Previews: PreviewProvider {
     static var previews: some View {
