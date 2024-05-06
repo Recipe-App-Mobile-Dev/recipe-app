@@ -31,7 +31,7 @@ struct RecipesView: View {
                         VStack(spacing: 20) {
                             ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
                                 NavigationLink(value: recipe) {
-                                    RecipeCardView(imageName: recipe.imageName, recipeName: recipe.recipeName)
+                                    RecipeCardView(recipe: recipe)
                                 }
                             }
                         }
@@ -56,9 +56,7 @@ struct RecipesView: View {
                     leading: NavigationLink(value: authModel.profile) {
                         Image(systemName: "person")
                     },
-                    trailing: Button(action: {
-                        // Action for searching
-                    }) {
+                    trailing: NavigationLink(destination: SearchView()) {
                         Image(systemName: "magnifyingglass")
                     }
                 )

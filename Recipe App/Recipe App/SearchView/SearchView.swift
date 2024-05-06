@@ -19,6 +19,10 @@ struct SearchView: View {
     
     let categories = ["All", "Cereal", "Vegetables", "Dinner", "Chinese", "Local Dish", "Fruit", "Breakfast", "Spanish", "Italian", "Lunch"]
     
+    init() {
+        self.searchModel = SearchModel()
+    }
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -103,7 +107,6 @@ struct FilteredRecipesView: View {
 }
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
-        let searchModel = SearchModel()
-        return SearchView(searchModel: searchModel)
+        return SearchView()
     }
 }
