@@ -13,7 +13,7 @@ class RecipesRepository: ObservableObject {
     private var db = Firestore.firestore()
     
     
-    func addRecipe(recipe: RecipeModel, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
+    func addRecipe(recipe: NewRecipeModel, completion: @escaping (_ recipe: NewRecipeModel?, _ error: Error?) -> Void) {
         let collectionRef = db.collection("recipes")
         
         let dateFormatter = DateFormatter()
@@ -28,10 +28,13 @@ class RecipesRepository: ObservableObject {
             print(stringCategories)
         }
         
+        // send image to firebase storage here
+        // get image name
+        
         let data: [String: Any] = [
             "userId": recipe.userId,
             "recipeName": recipe.recipeName,
-            "imageName": recipe.imageName,
+//            "imageName": recipe.imageName, add image name here
             "recipeDescription": recipe.recipeDescription ?? nil,
             "categories": stringCategories ?? nil,
             "dateCreated": dateString
@@ -70,7 +73,7 @@ class RecipesRepository: ObservableObject {
     }
     
     
-    func addRecipeStep(recipeId: String, recipeStep: RecipeModel.Step, completion: @escaping (_ recipeStep: RecipeModel.Step?, _ error: Error?) -> Void) {
+    func addRecipeStep(recipeId: String, recipeStep: NewRecipeModel.Step, completion: @escaping (_ recipeStep: NewRecipeModel.Step?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
             "stepNumber": recipeStep.stepNumber,
             "description": recipeStep.description,
@@ -95,9 +98,8 @@ class RecipesRepository: ObservableObject {
     }
     
     
-    func addRecipeIngredient(recipeId: String, recipeIngredient: RecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: RecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
+    func addRecipeIngredient(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
-            "ingredient": recipeIngredient.ingredient.id,
             "quantity": recipeIngredient.quantity
         ]
         
