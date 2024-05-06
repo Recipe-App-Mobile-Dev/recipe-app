@@ -24,6 +24,9 @@ struct LoadImageView: View {
                 if let image = loadedImage {
                     image
                         .resizable()
+                } else {
+                    Image("default")
+                        .resizable() // Use your default image here
                 }
             }
         }

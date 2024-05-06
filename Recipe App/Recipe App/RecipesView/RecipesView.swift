@@ -38,7 +38,7 @@ struct RecipesView: View {
                         .padding()
                     }
                         
-                    NavigationLink(destination: AddRecipeView()) {
+                    NavigationLink(destination: AddRecipeView(auth: authModel)) {
                         Image(systemName: "plus")
                             .font(.title.weight(.semibold))
                             .padding()

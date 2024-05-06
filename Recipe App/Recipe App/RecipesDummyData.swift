@@ -137,6 +137,39 @@ class RecipesDummyData {
     static func addDataToFirebase() {
         var rep = RecipesRepository()
         
+        var NewSmoothieRecipe: NewRecipeModel = NewRecipeModel(
+             userId: "8t4KSPZAvzclXoCzBpOQZifge0m2",
+             recipeName: "Green Smoothie _ delete later",
+             recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
+             ingredients: [
+                NewRecipeModel.RecipeIngridient(
+                    ingredient: NewIngredient(ingredientName: "Banana"),
+                    quantity: "1 whole"
+                ),
+                NewRecipeModel.RecipeIngridient(
+                    ingredient: NewIngredient(ingredientName: "Pineapple"),
+                    quantity: "1 cup"
+                ),
+                NewRecipeModel.RecipeIngridient(
+                    ingredient: NewIngredient(ingredientName: "Coconut water"),
+                    quantity: "1 cup"
+                )
+             ],
+             steps: [
+                 NewRecipeModel.Step(
+                     stepNumber: 1,
+                     description: "Place all ingredients in a blender.",
+                     stepImage: "banana.jpeg"
+                 ),
+                 NewRecipeModel.Step(
+                     stepNumber: 2,
+                     description: "Blend on high until smooth.",
+                     stepImage: "smoothie.jpeg"
+                 )
+             ],
+             categories: [.drink]
+        )
+        
 //        var ingredients = [
 //            Ingredient(id: "4", ingredientName: "Banana", imageName: "banana.jpeg"),
 //            Ingredient(id: "5", ingredientName: "Pineapple", imageName: "pineapple.jpeg"),
@@ -155,7 +188,7 @@ class RecipesDummyData {
 //            }
 //        }
         
-        rep.addRecipe(recipe: SmoothieRecipe) { (ingredient, error) in
+        rep.addRecipe(recipe: NewSmoothieRecipe) { (ingredient, error) in
             if let error = error {
                 print("Error while fetching the user profile: \(error)")
                 return

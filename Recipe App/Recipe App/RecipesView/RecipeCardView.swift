@@ -15,7 +15,7 @@ struct RecipeCardView: View {
     var body: some View {
         LoadImageView(imageName: "recipes/" + imageName)
             .aspectRatio(contentMode: .fill)
-            .frame(height: 200)
+            .frame(width: .infinity, height: 200)
             .clipped()
             .cornerRadius(10)
             .shadow(radius: 5)
