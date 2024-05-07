@@ -10,12 +10,12 @@ import SwiftUI
 import UIKit
 
 struct Ingredient: Hashable, Codable {
-    var id: String
+    var id: String?
     var ingredientName: String
     var imageName: String
 }
 
 struct NewIngredient {
     var ingredientName: String
-    var image: Image?
+    var image: UIImage?
 }

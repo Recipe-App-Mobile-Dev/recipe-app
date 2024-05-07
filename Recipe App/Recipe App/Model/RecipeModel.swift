@@ -49,7 +49,7 @@ struct RecipeModel: Identifiable, Codable, Hashable {
 struct NewRecipeModel {
     var userId: String
     var recipeName: String
-    var imageName: Image?
+    var imageName: UIImage?
     var recipeDescription: String
     var ingredients: [RecipeIngridient]?
     var steps: [Step]?

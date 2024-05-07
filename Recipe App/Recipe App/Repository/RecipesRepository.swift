@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestoreSwift
 import FirebaseFirestore
+import FirebaseStorage
 
 class RecipesRepository: ObservableObject {
     private var db = Firestore.firestore()
@@ -23,30 +24,45 @@ class RecipesRepository: ObservableObject {
         
         var stringCategories: [String]?
         if let enumCategories = recipe.categories {
-            print(enumCategories)
             stringCategories = enumCategories.map { $0.rawValue }
-            print(stringCategories)
         }
         
-        // send image to firebase storage here
-        // get image name
-        
+        if let image = recipe.imageName, let imageData = image.jpegData(compressionQuality: 0.8) {
+            let storageRef = Storage.storage().reference().child("recipe_images").child("\(UUID().uuidString).jpg")
+            
+            storageRef.putData(imageData, metadata: nil) { (metadata, error) in
+                guard metadata != nil else {
+                    completion(nil, error)
+                    return
+                }
+                
+                self.addRecipeToFirestore(recipe: recipe, imageUrl: storageRef.fullPath, dateString: dateString, stringCategories: stringCategories, completion: completion)
+            }
+        } else {
+            self.addRecipeToFirestore(recipe: recipe, imageUrl: nil, dateString: dateString, stringCategories: stringCategories, completion: completion)
+        }
+    }
+    
+    private func addRecipeToFirestore(recipe: NewRecipeModel, imageUrl: String?, dateString: String, stringCategories: [String]?, completion: @escaping (_ recipe: NewRecipeModel?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
             "userId": recipe.userId,
             "recipeName": recipe.recipeName,
-//            "imageName": recipe.imageName, add image name here
+            "imageName": imageUrl ?? "", // Save the image URL
             "recipeDescription": recipe.recipeDescription ?? nil,
             "categories": stringCategories ?? nil,
             "dateCreated": dateString
         ]
         
-        let docRef = collectionRef.addDocument(data: data) { error in
+        let docRef = db.collection("recipes").addDocument(data: data) { error in
             if let error = error {
-                print("Error adding document: \(error)")
+                completion(nil, error)
                 return
+            } else {
+                completion(recipe, nil)
             }
         }
-        
+
+                
         if let steps = recipe.steps {
             for step in steps {
                 self.addRecipeStep(recipeId: docRef.documentID, recipeStep: step) { (step, error) in
@@ -99,25 +115,46 @@ class RecipesRepository: ObservableObject {
     
     
     func addRecipeIngredient(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
-        let data: [String: Any] = [
+        if let image = recipeIngredient.ingredient.image, let imageData = image.jpegData(compressionQuality: 0.8) {
+            let storageRef = Storage.storage().reference().child("ingredient_images").child("\(UUID().uuidString).jpg")
+            
+            storageRef.putData(imageData, metadata: nil) { metadata, error in
+                guard let _ = metadata else {
+                    completion(nil, error)
+                    return
+                }
+            }
+            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: storageRef.fullPath, completion: completion)
+        } else {
+            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: nil, completion: completion)
+        }
+    }
+
+    private func addIngredientDocument(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, imageUrl: String?, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
+        var data: [String: Any] = [
+            "ingredientName": recipeIngredient.ingredient.ingredientName,
             "quantity": recipeIngredient.quantity
         ]
         
+        if let imageUrl = imageUrl {
+            data["imageUrl"] = imageUrl
+        }
+
         let docRef = db.collection("recipes/\(recipeId)/RecipeIngridient").addDocument(data: data) { error in
             if let error = error {
-                print("Error adding ingredient: \(error)")
+                completion(nil, error)
                 return
             }
         }
         
-        let recipeRef = db.collection("recipes").document(recipeId)
+        let recipeRef = self.db.collection("recipes").document(recipeId)
         recipeRef.updateData(["ingredients": FieldValue.arrayUnion([docRef.documentID])]) { error in
             if let error = error {
-                print("Error updating document: \(error)")
-            } 
+                completion(nil, error)
+            } else {
+                completion(recipeIngredient, nil)
+            }
         }
-        
-        completion(recipeIngredient, nil)
     }
     
     
@@ -365,45 +402,29 @@ class RecipesRepository: ObservableObject {
     
     func fetchRecipeIngredients(recipeId: String, completion: @escaping (_ recipeIngredients: [RecipeModel.RecipeIngridient]?, _ error: Error?) -> Void) {
         let recipeIngredientsPath = "recipes/" + recipeId + "/RecipeIngridient"
-        db.collection(recipeIngredientsPath).getDocuments() { (querySnapshot, error) in
-            guard error == nil else {
-                print("error getting recipe ingredient", error ?? "")
+        db.collection(recipeIngredientsPath).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting recipe ingredients: \(error)")
+                completion(nil, error)
                 return
             }
-            
+
             var ingredientArray: [RecipeModel.RecipeIngridient] = []
-            
-            let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
-            
+
             for document in querySnapshot!.documents {
-                if let ingredientId = document["ingredient"] as? String ?? nil {
-                    dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
-                    self.fetchIngrediets(ingredientId: ingredientId) { (ingredient, error) in
-                        defer {
-                            dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
-                        }
-                        
-                        if let error = error {
-                            print("Error while fetching the ingredient: \(error)")
-                            return
-                        }
-                        
-                        if let ingredient = ingredient {
-                            let recipeIngredient = RecipeModel.RecipeIngridient(
-                                ingredient: ingredient,
-                                quantity: document["quantity"] as? String ?? ""
-                            )
-                            
-                            ingredientArray.append(recipeIngredient)
-                        }
-                    }
-                }
+                let data = document.data()
+                let ingredientName = data["ingredientName"] as? String ?? ""
+                let quantity = data["quantity"] as? String ?? ""
+                let imageUrl = data["imageUrl"] as? String ?? ""
+
+                let ingredient = RecipeModel.RecipeIngridient(
+                    ingredient: Ingredient(ingredientName: ingredientName, imageName: imageUrl),
+                    quantity: quantity
+                )
+                ingredientArray.append(ingredient)
             }
-            
-            // Notify when all asynchronous calls inside the DispatchGroup have completed
-            dispatchGroup.notify(queue: .main) {
-                completion(ingredientArray, error)
-            }
+
+            completion(ingredientArray, nil)
         }
     }
     

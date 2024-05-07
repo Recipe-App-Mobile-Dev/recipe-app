@@ -20,43 +20,48 @@ struct ProfileView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack {
-                HStack {
-                    ProfileCardView(profile: authModel.profile)
-                    Spacer()
-                    Image(systemName: "pencil")
-                        .padding(.trailing, 20)
-                    
-                }.padding(.top, 30)
-                if let fetchedRecipes = viewModel.recipes {
-                    VStack(spacing: 20) {
-                        ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
-                            NavigationLink(value: recipe) {
-                                RecipeCardView(recipe: recipe)
+        if let fetchedProfile = viewModel.profile {
+            ScrollView {
+                VStack {
+                    HStack {
+                        ProfileCardView(profile: fetchedProfile)
+                        Spacer()
+                        NavigationLink(destination: ProfileEditView(authModel: authModel, path: $path)) {
+                            Image(systemName: "pencil")
+                                .padding(.trailing, 20)
+                        }
+                        
+                    }.padding(.top, 30)
+                    if let fetchedRecipes = viewModel.recipes {
+                        VStack(spacing: 20) {
+                            ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
+                                NavigationLink(value: recipe) {
+                                    RecipeCardView(recipe: recipe)
+                                }
                             }
                         }
+                        .padding()
+                        .padding(.top, 20)
+                    }
+                    
+                    Button("Log Out") {
+                        authModel.signOut()
+                    }
+                    
+                    Button("TEST add dummy recipe") {
+                        RecipesDummyData.addDataToFirebase()
                     }
                     .padding()
-                    .padding(.top, 20)
                 }
-                
-                Button("Log Out") {
-                    authModel.signOut()
-                }
-                
-                Button("TEST add dummy recipe") {
-                    RecipesDummyData.addDataToFirebase()
-                }
-                .padding()
             }
-        }
-        .navigationDestination(for: RecipeModel.self) { recipe in
-            LazyView(RecipeView(recipe: recipe, auth: authModel, path: $path))
-        }
-        .navigationTitle("Profile")
-        .onAppear {
-            viewModel.fetchUserRecipes(userId: authModel.profile.uid)
+            .navigationDestination(for: RecipeModel.self) { recipe in
+                LazyView(RecipeView(recipe: recipe, auth: authModel, path: $path))
+            }
+            .navigationTitle("Profile")
+            .onAppear {
+                viewModel.fetchUserRecipes(userId: authModel.profile.uid)
+                viewModel.fetchUserProfile(userId: authModel.profile.uid)
+            }
         }
     }
 }

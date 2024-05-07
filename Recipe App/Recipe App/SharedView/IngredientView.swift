@@ -14,7 +14,7 @@ struct IngredientView: View {
     
     var body: some View {
         HStack {
-            LoadImageView(imageName: "ingredients/" + ingredient.imageName)
+            LoadImageView(imageName: ingredient.imageName)
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 60, height: 60)
                 .cornerRadius(10)

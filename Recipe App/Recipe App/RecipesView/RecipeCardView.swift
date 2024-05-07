@@ -13,7 +13,7 @@ struct RecipeCardView: View {
     
     var body: some View {
         ZStack {
-            LoadImageView(imageName: "recipes/" + recipe.imageName)
+            LoadImageView(imageName: recipe.imageName)
                 .aspectRatio(contentMode: .fill)
                 .frame(height: 200)
                 .clipped()

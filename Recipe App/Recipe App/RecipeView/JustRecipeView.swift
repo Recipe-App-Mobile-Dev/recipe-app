@@ -16,7 +16,7 @@ struct JustRecipeView: View {
         GeometryReader { geometry in
             ScrollView {
                 ZStack {
-                    LoadImageView(imageName: "recipes/" + recipe.imageName)
+                    LoadImageView(imageName: recipe.imageName)
                         .aspectRatio(contentMode: .fill)
                         .frame(width: geometry.size.width - 40, height: 300)
                         .cornerRadius(10)
