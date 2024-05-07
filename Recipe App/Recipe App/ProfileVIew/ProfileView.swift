@@ -24,7 +24,18 @@ struct ProfileView: View {
             ScrollView {
                 VStack {
                     HStack {
-                        ProfileCardView(profile: fetchedProfile)
+                        HStack {
+                            LoadImageView(imageName: "profiles/\(fetchedProfile.uid)/profile.jpg", defaultImage: Image("defaultIcon"))
+                                .scaledToFill()
+                                .clipShape(Circle())
+                                .frame(width: 60, height: 60)
+                                .padding(.leading)
+                            VStack(alignment: .leading) {
+                                Text(fetchedProfile.name)
+                                    .font(.headline)
+                            }
+                            .padding(.leading)
+                        }.padding()
                         Spacer()
                         NavigationLink(destination: ProfileEditView(authModel: authModel, path: $path)) {
                             Image(systemName: "pencil")

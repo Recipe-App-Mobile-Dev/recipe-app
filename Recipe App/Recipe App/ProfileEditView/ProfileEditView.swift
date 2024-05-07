@@ -11,7 +11,7 @@ import SwiftUI
 struct ProfileEditView: View {
     @StateObject var viewModel: ProfileEditViewModel
     @State private var showingImagePicker = false
-    @State private var navigateToProfileView = false
+    @Environment(\.presentationMode) var presentationMode
     @Binding var path: NavigationPath
     var authModel: AuthModel
 
@@ -50,13 +50,12 @@ struct ProfileEditView: View {
             }) {
                 ButtonView(text: "Save", color: Color.green)
             }
-            .background(NavigationLink(destination: ProfileView(authModel: authModel, path: $path), isActive: $navigateToProfileView) { EmptyView() })
             .padding(.horizontal, 10.0)
             Spacer()
         }
         .onAppear {
             viewModel.onSaveCompleted = {
-                navigateToProfileView = true
+                presentationMode.wrappedValue.dismiss()
             }
         }
         .padding()
