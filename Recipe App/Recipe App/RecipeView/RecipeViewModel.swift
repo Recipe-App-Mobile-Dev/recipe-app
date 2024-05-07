@@ -18,6 +18,7 @@ class RecipeViewModel: ObservableObject {
     @Published var isRated: Int = 0
     @Published var deletionAlert: Bool = false
     @Published var ratingAlert: Bool = false
+    
     private var recipesRepository = RecipesRepository()
     private var usersRepository = UserProfileRepository()
     
@@ -37,6 +38,22 @@ class RecipeViewModel: ObservableObject {
                 return
             } else {
                 self.recipe = recipe
+            }
+        }
+    }    
+    
+    
+    func reloadRecipe(recipe: RecipeModel) {
+        recipesRepository.reloadRecipe(recipeId: recipe.id) { [weak self] recipe, error in
+            guard let self = self else { return }
+            if let error = error {
+                print("Error while fetching the recipe: \(error)")
+                return
+            } else {
+                DispatchQueue.main.async {
+                    self.recipe = recipe
+                    print("2", self.recipe?.recipeDescription ?? "no")
+                }
             }
         }
     }
@@ -94,5 +111,4 @@ class RecipeViewModel: ObservableObject {
         }
     }
     
-    // func editRecipe
 }

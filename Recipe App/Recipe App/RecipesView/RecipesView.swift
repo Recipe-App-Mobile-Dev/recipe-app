@@ -10,13 +10,11 @@ import Foundation
 
 struct RecipesView: View {
     @ObservedObject var viewModel: RecipesViewModel
-    @Binding var path: NavigationPath
     var authModel: AuthModel
 
-    init(test: Bool? = false, authModel: AuthModel, path: Binding<NavigationPath>) {
+    init(test: Bool? = false, authModel: AuthModel) {
         viewModel = RecipesViewModel(test: test)
         self.authModel = authModel
-        _path = path
     }
 
     var body: some View {
@@ -30,7 +28,7 @@ struct RecipesView: View {
                         
                         VStack(spacing: 20) {
                             ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
-                                NavigationLink(value: recipe) {
+                                NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
                                     RecipeCardView(recipe: recipe)
                                 }
                             }
@@ -53,19 +51,13 @@ struct RecipesView: View {
                 }
                 .navigationBarTitle("App Name", displayMode: .inline)
                 .navigationBarItems(
-                    leading: NavigationLink(value: authModel.profile) {
+                    leading: NavigationLink(destination: ProfileView(authModel: authModel)) {
                         Image(systemName: "person")
                     },
                     trailing: NavigationLink(destination: SearchView()) {
                         Image(systemName: "magnifyingglass")
                     }
                 )
-                .navigationDestination(for: UserProfile.self) { profile in
-                    ProfileView(authModel: authModel, path: $path)
-                }
-                .navigationDestination(for: RecipeModel.self) { recipe in
-                    LazyView(RecipeView(recipe: recipe, auth: authModel, path: $path))
-                }
                 .onAppear { viewModel.fetchRecipes() }
             }
         }
@@ -86,11 +78,7 @@ struct RecipesView_Previews: PreviewProvider {
     static var previews: some View {
         RecipesView(
             test: true,
-            authModel: AuthModel(),
-            path: Binding<NavigationPath>(
-                get: { return NavigationPath() },
-                set: { _ in }
-            )
+            authModel: AuthModel()
         )
     }
 }

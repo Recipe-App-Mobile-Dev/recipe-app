@@ -9,16 +9,14 @@ import Foundation
 import SwiftUI
 
 struct ProfileEditView: View {
+    @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: ProfileEditViewModel
     @State private var showingImagePicker = false
-    @State private var navigateToProfileView = false
-    @Binding var path: NavigationPath
     var authModel: AuthModel
 
-    init(authModel: AuthModel, path: Binding<NavigationPath>) {
+    init(authModel: AuthModel) {
         _viewModel = StateObject(wrappedValue: ProfileEditViewModel(profile: authModel.profile))
         self.authModel = authModel
-        _path = path
     }
     
     var body: some View {
@@ -50,13 +48,12 @@ struct ProfileEditView: View {
             }) {
                 ButtonView(text: "Save", color: Color.green)
             }
-            .background(NavigationLink(destination: ProfileView(authModel: authModel, path: $path), isActive: $navigateToProfileView) { EmptyView() })
             .padding(.horizontal, 10.0)
             Spacer()
         }
         .onAppear {
             viewModel.onSaveCompleted = {
-                navigateToProfileView = true
+                presentationMode.wrappedValue.dismiss()
             }
         }
         .padding()
@@ -65,10 +62,6 @@ struct ProfileEditView: View {
 
 struct ProfileEditView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileEditView(authModel: AuthModel(testProfile: true),
-        path: Binding<NavigationPath>(
-            get: { return NavigationPath() },
-            set: { _ in }
-        ))
+        ProfileEditView(authModel: AuthModel(testProfile: true))
     }
 }

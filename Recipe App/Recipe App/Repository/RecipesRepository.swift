@@ -14,6 +14,95 @@ class RecipesRepository: ObservableObject {
     private var db = Firestore.firestore()
     
     
+    func reloadRecipe(recipeId: String, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
+        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+        db.collection("recipes").document(recipeId).getDocument { document, error in
+            guard error == nil else {
+                print("error getting recipes", error ?? "")
+                return
+            }
+            
+            if let document = document {
+                if let dateString = document["dateCreated"] as? String {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                    if let date = dateFormatter.date(from: dateString) {
+                        var recipe = RecipeModel(
+                            id: document.documentID as String,
+                            userId: document["userId"] as? String ?? "",
+                            recipeName: document["recipeName"] as? String ?? "",
+                            imageName: document["imageName"] as? String ?? "",
+                            recipeDescription: document["recipeDescription"] as? String ?? nil,
+                            categories: document["categories"] as? [Category] ?? nil,
+                            dateCreated: date
+                        )
+                        
+                        if let categoriesArray = document["categories"] as? [String] ?? nil {
+                            var enumCategories = categoriesArray.compactMap { Category(rawValue: $0) }
+                            recipe.categories = enumCategories
+                        }
+                        
+                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        self.fetchRecipeRating(recipeId: document.documentID) { rating, error in
+                            defer {
+                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                            }
+                            
+                            guard error == nil else {
+                                print("error getting rating", error ?? "")
+                                return
+                            }
+                            
+                            if let rating = rating {
+                                recipe.rating = rating
+                            }
+                        }
+                        
+                        var steps: [RecipeModel.Step]? = []
+                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        self.fetchSteps(recipeId: document.documentID) { (recipeSteps, error) in
+                            defer {
+                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                            }
+                            
+                            if let error = error {
+                                print("Error while fetching the recipe ingredient: \(error)")
+                                return
+                            }
+                            steps = recipeSteps
+                        }
+                        
+                        var ingredients: [RecipeModel.RecipeIngridient]?
+                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        self.fetchRecipeIngredients(recipeId: document.documentID) { (recipeIngredients, error) in
+                            defer {
+                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                            }
+                            
+                            if let error = error {
+                                print("Error while fetching the recipe ingredient: \(error)")
+                                return
+                            }
+                            ingredients = recipeIngredients
+                        }
+                        
+                        // Notify when all asynchronous calls inside the DispatchGroup have completed
+                        dispatchGroup.notify(queue: .main) {
+                            if let ingredients = ingredients, let steps = steps {
+                                recipe.ingredients = ingredients
+                                recipe.steps = steps
+                                completion(recipe, nil)
+                            } else {
+                                completion(nil, error)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
     func addRecipe(recipe: NewRecipeModel, completion: @escaping (_ recipe: NewRecipeModel?, _ error: Error?) -> Void) {
         let collectionRef = db.collection("recipes")
         
@@ -114,6 +203,22 @@ class RecipesRepository: ObservableObject {
     }
     
     
+//    func addRecipeIngredient(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
+//        if let image = recipeIngredient.ingredient.image, let imageData = image.jpegData(compressionQuality: 0.8) {
+//            let storageRef = Storage.storage().reference().child("ingredient_images").child("\(UUID().uuidString).jpg")
+//            
+//            storageRef.putData(imageData, metadata: nil) { metadata, error in
+//                guard let _ = metadata else {
+//                    completion(nil, error)
+//                    return
+//                }
+//            }
+//            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: storageRef.fullPath, completion: completion)
+//        } else {
+//            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: nil, completion: completion)
+//        }
+//    }
+    
     func addRecipeIngredient(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
         if let image = recipeIngredient.ingredient.image, let imageData = image.jpegData(compressionQuality: 0.8) {
             let storageRef = Storage.storage().reference().child("ingredient_images").child("\(UUID().uuidString).jpg")
@@ -124,9 +229,39 @@ class RecipesRepository: ObservableObject {
                     return
                 }
             }
-            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: storageRef.fullPath, completion: completion)
-        } else {
-            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: nil, completion: completion)
+            
+            let ingredient: [String: Any] = [
+                "ingredientName": recipeIngredient.ingredient.ingredientName,
+                "imageName": storageRef.fullPath
+            ]
+            
+            let docRefIngredient = db.collection("ingredients").addDocument(data: ingredient) { error in
+                if let error = error {
+                    completion(nil, error)
+                    return
+                }
+            }
+            
+            let addRecipeIngredient: [String: Any] = [
+                "ingredient": docRefIngredient.documentID,
+                "quantity": recipeIngredient.quantity
+            ]
+            
+            let docRefRecipeIngredient = db.collection("recipes/\(recipeId)/RecipeIngridient").addDocument(data: addRecipeIngredient) { error in
+                if let error = error {
+                    print("Error adding ingredient: \(error)")
+                    return
+                }
+            }
+            
+            let recipeRef = db.collection("recipes").document(recipeId)
+            recipeRef.updateData(["ingredients": FieldValue.arrayUnion([docRefRecipeIngredient.documentID])]) { error in
+                if let error = error {
+                    print("Error updating document: \(error)")
+                }
+            }
+            
+            completion(recipeIngredient, nil)
         }
     }
 
@@ -402,29 +537,45 @@ class RecipesRepository: ObservableObject {
     
     func fetchRecipeIngredients(recipeId: String, completion: @escaping (_ recipeIngredients: [RecipeModel.RecipeIngridient]?, _ error: Error?) -> Void) {
         let recipeIngredientsPath = "recipes/" + recipeId + "/RecipeIngridient"
-        db.collection(recipeIngredientsPath).getDocuments { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting recipe ingredients: \(error)")
-                completion(nil, error)
+        db.collection(recipeIngredientsPath).getDocuments() { (querySnapshot, error) in
+            guard error == nil else {
+                print("error getting recipe ingredient", error ?? "")
                 return
             }
-
+            
             var ingredientArray: [RecipeModel.RecipeIngridient] = []
-
+            
+            let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+            
             for document in querySnapshot!.documents {
-                let data = document.data()
-                let ingredientName = data["ingredientName"] as? String ?? ""
-                let quantity = data["quantity"] as? String ?? ""
-                let imageUrl = data["imageUrl"] as? String ?? ""
-
-                let ingredient = RecipeModel.RecipeIngridient(
-                    ingredient: Ingredient(ingredientName: ingredientName, imageName: imageUrl),
-                    quantity: quantity
-                )
-                ingredientArray.append(ingredient)
+                if let ingredientId = document["ingredient"] as? String ?? nil {
+                    dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                    self.fetchIngrediets(ingredientId: ingredientId) { (ingredient, error) in
+                        defer {
+                            dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                        }
+                        
+                        if let error = error {
+                            print("Error while fetching the ingredient: \(error)")
+                            return
+                        }
+                        
+                        if let ingredient = ingredient {
+                            let recipeIngredient = RecipeModel.RecipeIngridient(
+                                ingredient: ingredient,
+                                quantity: document["quantity"] as? String ?? ""
+                            )
+                            
+                            ingredientArray.append(recipeIngredient)
+                        }
+                    }
+                }
             }
-
-            completion(ingredientArray, nil)
+            
+            // Notify when all asynchronous calls inside the DispatchGroup have completed
+            dispatchGroup.notify(queue: .main) {
+                completion(ingredientArray, error)
+            }
         }
     }
     
@@ -449,6 +600,34 @@ class RecipesRepository: ObservableObject {
         }
     }
     
+    
+    func fetchAllIngrediets(completion: @escaping (_ ingredients: [Ingredient]?, _ error: Error?) -> Void) {
+        db.collection("ingredients").getDocuments { (document, error) in
+            guard error == nil else {
+                print("error getting ingredient", error ?? "")
+                return
+            }
+            
+            var ingredients: [Ingredient] = []
+
+            for document in document!.documents {
+                let data = document.data()
+                let ingredientName = data["ingredientName"] as? String ?? ""
+                let imageName = data["imageName"] as? String ?? ""
+
+                let ingredient = Ingredient(
+                    id: document.documentID,
+                    ingredientName: ingredientName,
+                    imageName: imageName
+                )
+                ingredients.append(ingredient)
+            }
+
+            completion(ingredients, nil)
+        }
+    }
+    
+    
     func fetchUsersRecipeRating(recipeId: String, userId: String, completion: @escaping (_ rating: Int?, _ error: Error?) -> Void) {
         let recipeIngredientsPath = "recipes/" + recipeId + "/rating"
         db.collection(recipeIngredientsPath).whereField("userId", isEqualTo: userId).getDocuments { documents, error in
@@ -468,6 +647,115 @@ class RecipesRepository: ObservableObject {
             }
         }
     }
+  
+    func updateRecipe(recipeId: String, recipe: RecipeModel, completion: @escaping (_ done: Bool, _ error: Error?) -> Void) {
+        let dispatchGroup = DispatchGroup()
+        
+        let docRef = db.collection("recipes").document(recipeId)
+        
+        let data: [String: Any] = [
+            "imageName": recipe.imageName,
+            "recipeDescription": recipe.recipeDescription ?? FieldValue.delete(),
+            "steps": []
+        ]
+        
+        dispatchGroup.enter()
+        docRef.updateData(data) { error in
+            if let error = error {
+                completion(false, error)
+            } else {
+                completion(true, nil)
+            }
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.enter()
+        updateRecipeSteps(recipeId: recipeId, recipeSteps: recipe.steps ?? []) { error in
+            if let error = error {
+                completion(false, error)
+            } else {
+                completion(true, nil)
+            }
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.enter()
+        updateRecipeIngredients(recipeId: recipeId, recipeIngredients: recipe.ingredients ?? []) { error in
+            if let error = error {
+                completion(false, error)
+            } else {
+                completion(true, nil)
+            }
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completion(true, nil)
+        }
+    }
+    
+    func updateRecipeSteps(recipeId: String, recipeSteps: [RecipeModel.Step], completion: @escaping (_ error: Error?) -> Void) {
+        let stepsCollection = db.collection("recipes/\(recipeId)/steps")
+        
+        stepsCollection.getDocuments { snapshot, error in
+            if let error = error {
+                completion(error)
+                return
+            }
+            
+            snapshot?.documents.forEach { document in
+                stepsCollection.document(document.documentID).delete()
+            }
+            
+            for step in recipeSteps {
+                let data: [String: Any] = [
+                    "stepNumber": step.stepNumber,
+                    "description": step.description,
+                    "stepImage": step.stepImage ?? ""
+                ]
+                
+                stepsCollection.addDocument(data: data) { error in
+                    if let error = error {
+                        completion(error)
+                    }
+                }
+            }
+            
+            completion(nil)
+        }
+    }
+    
+    
+    func updateRecipeIngredients(recipeId: String, recipeIngredients: [RecipeModel.RecipeIngridient], completion: @escaping (_ error: Error?) -> Void) {
+        let ingredientsCollection = db.collection("recipes/\(recipeId)/RecipeIngridient")
+        
+        ingredientsCollection.getDocuments { snapshot, error in
+            if let error = error {
+                completion(error)
+                return
+            }
+            
+            snapshot?.documents.forEach { document in
+                ingredientsCollection.document(document.documentID).delete()
+            }
+            
+            for ingredient in recipeIngredients {
+                let data: [String: Any] = [
+                    "ingredient": ingredient.ingredient.id,
+                    "quantity": ingredient.quantity
+                ]
+                
+                ingredientsCollection.addDocument(data: data) { error in
+                    if let error = error {
+                        completion(error)
+                    }
+                }
+            }
+            
+            completion(nil)
+        }
+    }
+    
     
     func deleteRecipe(recipeId: String, completion: @escaping (_ error: Error?) -> Void) {
         let steps = "recipes/\(recipeId)/steps"

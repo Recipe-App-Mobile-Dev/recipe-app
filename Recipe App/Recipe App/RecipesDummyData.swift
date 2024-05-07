@@ -16,15 +16,15 @@ class RecipesDummyData {
         recipeDescription: "So simple. It's just toast, spread with cheese, topped with sliced fresh garden tomatoes, and sprinkled with coarse salt and freshly ground black pepper.",
         ingredients: [
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "TK64liqxdDmlkODMrtOP", ingredientName: "Tomatoes", imageName: "Tomato.jpeg"),
+                ingredient: Ingredient(id: "TK64liqxdDmlkODMrtOP", ingredientName: "Tomatoes", imageName: "ingredients/Tomato.jpeg"),
                 quantity: "500g"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "8s4sJgwMfjRF1fQGeeNt", ingredientName: "Bread", imageName: "bread.jpg"),
+                ingredient: Ingredient(id: "8s4sJgwMfjRF1fQGeeNt", ingredientName: "Bread", imageName: "ingredients/bread.jpg"),
                 quantity: "2 pieces"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "e3WTv0Q7ou3jdyI1Ykgn", ingredientName: "Soft cheese", imageName: "softcheese.jpeg"),
+                ingredient: Ingredient(id: "e3WTv0Q7ou3jdyI1Ykgn", ingredientName: "Soft cheese", imageName: "ingredients/softcheese.jpeg"),
                 quantity: "2 tsp"
             )
         ],
@@ -58,15 +58,15 @@ class RecipesDummyData {
          recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
          ingredients: [
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "64DcyApmUJtAUWlajdzh", ingredientName: "Banana", imageName: "banana.jpeg"),
+                ingredient: Ingredient(id: "64DcyApmUJtAUWlajdzh", ingredientName: "Banana", imageName: "ingredients/banana.jpeg"),
                 quantity: "1 whole"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "127ueNcgsjfzXwIAnD4r", ingredientName: "Pineapple", imageName: "pineapple.jpeg"),
+                ingredient: Ingredient(id: "127ueNcgsjfzXwIAnD4r", ingredientName: "Pineapple", imageName: "ingredients/pineapple.jpeg"),
                 quantity: "1 cup"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "VF6s6A6uvCqNxMxK94iL", ingredientName: "Coconut water", imageName: "coconutwater.jpeg"),
+                ingredient: Ingredient(id: "VF6s6A6uvCqNxMxK94iL", ingredientName: "Coconut water", imageName: "ingredients/coconutwater.jpeg"),
                 quantity: "1 cup"
             )
          ],
@@ -95,19 +95,19 @@ class RecipesDummyData {
          recipeDescription: "A tasty pasta salad packed with cucumbers, tomatoes, and a light vinaigrette. Perfect for picnics or a quick lunch.",
          ingredients: [
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "c9P3VhY5wfRgiUa3RLYq", ingredientName: "Pasta", imageName: "pasta.jpeg"),
+                ingredient: Ingredient(id: "c9P3VhY5wfRgiUa3RLYq", ingredientName: "Pasta", imageName: "ingredients/pasta.jpeg"),
                 quantity: "200g"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "JGMCQzXdLgo3U91nr0LX", ingredientName: "Cucumbers", imageName: "cucumber.jpeg"),
+                ingredient: Ingredient(id: "JGMCQzXdLgo3U91nr0LX", ingredientName: "Cucumbers", imageName: "ingredients/cucumber.jpeg"),
                 quantity: "1 whole"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "TK64liqxdDmlkODMrtOP", ingredientName: "Tomatoes", imageName: "Tomato.jpeg"),
+                ingredient: Ingredient(id: "TK64liqxdDmlkODMrtOP", ingredientName: "Tomatoes", imageName: "ingredients/Tomato.jpeg"),
                 quantity: "200g"
             ),
             RecipeModel.RecipeIngridient(
-                ingredient: Ingredient(id: "QuBBGxlPDCNWEeIkoLvU", ingredientName: "Vinaigrette", imageName: "vinaigrette.jpeg"),
+                ingredient: Ingredient(id: "QuBBGxlPDCNWEeIkoLvU", ingredientName: "Vinaigrette", imageName: "ingredients/vinaigrette.jpeg"),
                 quantity: "3 tbsp"
             )
          ],

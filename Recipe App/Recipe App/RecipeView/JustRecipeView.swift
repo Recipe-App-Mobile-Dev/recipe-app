@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct JustRecipeView: View {
-    @State var recipe: RecipeModel
+    @Binding var recipe: RecipeModel
     @State var profile: UserProfile?
     
     var body: some View {
@@ -88,7 +88,10 @@ struct JustRecipeView: View {
 
 #Preview {
     JustRecipeView(
-        recipe: RecipesDummyData.ToastRecipe,
+        recipe: Binding<RecipeModel> (
+                get: { return RecipesDummyData.ToastRecipe },
+                set: { _ in }
+            ),
         profile: AuthModel(testProfile: true).profile
     )
 }

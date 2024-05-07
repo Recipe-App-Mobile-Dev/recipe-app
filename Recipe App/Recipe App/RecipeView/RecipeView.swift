@@ -9,27 +9,28 @@ import Foundation
 import SwiftUI
 
 struct RecipeView: View {
+    @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewModel: RecipeViewModel
-    @Binding var path: NavigationPath
     @State var deletionAlert: Bool = false
     @State var ratingAlert: Bool = false
     @State var isEditing: Bool = false
     
-    init(recipe: RecipeModel, auth: AuthModel, path: Binding<NavigationPath>) {
+    init(recipe: RecipeModel, auth: AuthModel) {
         viewModel = RecipeViewModel(recipe: recipe, auth: auth)
-        _path = path
     }
     
     var body: some View {
         if let fetchedRecipe = viewModel.recipe {
             if isEditing == false {
                 VStack {
-                    JustRecipeView(recipe: fetchedRecipe, profile: viewModel.userProfile)
+                    JustRecipeView(recipe: Binding.constant(fetchedRecipe), profile: viewModel.userProfile)
                         .navigationTitle(fetchedRecipe.recipeName)
                     
                     if viewModel.authModel.profile.uid == fetchedRecipe.userId {
                         HStack {
-                            Button(action: { isEditing = true }) {
+                            Button(action: {
+                                isEditing = true
+                            }) {
                                 ButtonView(text: "Edit", color: Color.green)
                             }
                             .padding(.horizontal, 10.0)
@@ -47,7 +48,7 @@ struct RecipeView: View {
                                             if viewModel.isDeleted == false {
                                                 ProgressView()
                                             } else {
-                                                path.removeLast()
+                                                presentationMode.wrappedValue.dismiss()
                                             }
                                         }
                                     },
@@ -94,22 +95,10 @@ struct RecipeView: View {
                         }
                     }
                 }
+                .onAppear{ viewModel.reloadRecipe(recipe: viewModel.recipe!) }
             } else {
-                EditRecipeView(recipe: fetchedRecipe)
-                    .navigationTitle("Editing" + fetchedRecipe.recipeName)
-                
-                HStack {
-                    Button(action: {  }) {
-                        ButtonView(text: "Save", color: Color.green)
-                    }
-                    .padding(.horizontal, 10.0)
-                    
-                    Button(action: { isEditing = false }) {
-                        ButtonView(text: "Cancel", color: Color.blue)
-                    }
-                    .padding(.horizontal, 10.0)
-                }
-                .padding()
+                EditRecipeView(recipe: Binding.constant(fetchedRecipe), isEditing: $isEditing)
+                    .navigationTitle("Editing " + fetchedRecipe.recipeName)
             }
         } else {
             ProgressView()
@@ -121,10 +110,6 @@ struct RecipeView: View {
 #Preview {
     RecipeView(
         recipe: RecipesDummyData.ToastRecipe,
-        auth: AuthModel(testProfile: true),
-        path: Binding<NavigationPath>(
-            get: { return NavigationPath() },
-            set: { _ in }
-        )
+        auth: AuthModel(testProfile: true)
     )
 }
