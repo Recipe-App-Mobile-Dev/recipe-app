@@ -26,7 +26,7 @@ class AddRecipeViewModel: ObservableObject {
     @Published var procedures: [String] = []
     @Published var selectedCategories: [Category] = []
     @Published var ingredientRows: [IngredientData] = []
-    @Environment(\.presentationMode) var presentationMode
+    var onSaveCompleted: (() -> Void)?
     
     init(auth: AuthModel) {
         self.authModel = auth
@@ -68,6 +68,9 @@ class AddRecipeViewModel: ObservableObject {
             if let error = error {
                 print("Error while adding a new recipe: \(error)")
                 return
+            }
+            DispatchQueue.main.async {
+                self.onSaveCompleted?()
             }
         }
     }

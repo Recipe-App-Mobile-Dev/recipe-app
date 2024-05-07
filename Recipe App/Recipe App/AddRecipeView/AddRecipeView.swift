@@ -109,7 +109,6 @@ struct AddRecipeView: View {
                 ToolbarItem(placement: .bottomBar) {
                    Button("Done") {
                        viewModel.saveRecipe()
-                       presentationMode.wrappedValue.dismiss()
                     }
                 }
             }
@@ -118,6 +117,11 @@ struct AddRecipeView: View {
             }
             .sheet(isPresented: $isShowingIngredientImagePicker) {
                 ImagePicker(image: $viewModel.ingredientRows[selectedIngredientIndex].image)
+            }
+            .onAppear {
+                viewModel.onSaveCompleted = {
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
         }
     }
