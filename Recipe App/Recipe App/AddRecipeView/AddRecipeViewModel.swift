@@ -45,19 +45,19 @@ class AddRecipeViewModel: ObservableObject {
     }
     
     func addIngredientRow() {
-        var newRow = IngredientData(image: nil, ingredient: "", quantity: "")
+        let newRow = IngredientData(image: nil, ingredient: "", quantity: "")
         ingredientRows.append(newRow)
     }
     
     func saveRecipe() {
-        var rep = RecipesRepository()
+        let rep = RecipesRepository()
         
         let newRecipe = NewRecipeModel(
             userId: authModel.profile.uid,
             recipeName: name,
             imageName: image,
             recipeDescription: description,
-            ingredients: ingredientRows.map { NewRecipeModel.RecipeIngridient(ingredient: NewIngredient(ingredientName: $0.ingredient, image: $0.image), quantity: $0.quantity) },
+            ingredients: ingredientRows.map { ingredient in NewRecipeModel.RecipeIngridient(ingredient: NewIngredient(ingredientName: ingredient.ingredient, image: ingredient.image), quantity: ingredient.quantity) },
             steps: procedures.enumerated().map { index, stepDescription in
                 NewRecipeModel.Step(stepNumber: index, description: stepDescription)
             },
