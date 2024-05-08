@@ -26,7 +26,7 @@ struct StepView: View {
             }
             
             if let stepHasImage = step.stepImage, stepHasImage != "" {
-                LoadImageView(imageName: stepHasImage)
+                LoadImageView(imageName: "recipesteps/\(recipeId)/" + stepHasImage)
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 120, height: 120)
                     .cornerRadius(10)

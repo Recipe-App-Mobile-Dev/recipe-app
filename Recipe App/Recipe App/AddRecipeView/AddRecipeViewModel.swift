@@ -23,17 +23,14 @@ class AddRecipeViewModel: ObservableObject {
     @Published var isShowingImagePicker = false
     @Published var isShowingImagePicker2 = false
     @Published var selectedIngredientIndex = 0
-    @Published var procedures: [String] = []
+    @Published var newSteps: [RecipeModel.Step] = []
+    @Published var newStepImages: [UIImage?] = []
     @Published var selectedCategories: [Category] = []
     @Published var newIngredients: [RecipeModel.RecipeIngridient] = []
     var onSaveCompleted: (() -> Void)?
     
     init(auth: AuthModel) {
         self.authModel = auth
-    }
-    
-    func addProcedure() {
-        procedures.append("")
     }
     
     func toggleCategorySelection(_ category: Category){
@@ -53,20 +50,24 @@ class AddRecipeViewModel: ObservableObject {
             imageName: image,
             recipeDescription: description,
             ingredients: newIngredients,
-            steps: procedures.enumerated().map { index, stepDescription in
-                NewRecipeModel.Step(stepNumber: index + 1, description: stepDescription)
-            },
+            steps: newSteps,
             categories: selectedCategories
         )
         
-        rep.addRecipe(recipe: newRecipe) { (ingredient, error) in
-            if let error = error {
-                print("Error while adding a new recipe: \(error)")
-                return
-            }
-            DispatchQueue.main.async {
-                self.onSaveCompleted?()
-            }
+        rep.addRecipe(recipe: newRecipe, newStepImages: newStepImages) { (ingredient, error) in
+           if let error = error {
+               print("Error while adding a new recipe: \(error)")
+               return
+           }
+           DispatchQueue.main.async {
+               self.onSaveCompleted?()
+           }
+       }
+    }
+    
+    func recalculateSteps() {
+        for i in 0..<newSteps.count {
+            newSteps[i].stepNumber = i+1
         }
     }
 }

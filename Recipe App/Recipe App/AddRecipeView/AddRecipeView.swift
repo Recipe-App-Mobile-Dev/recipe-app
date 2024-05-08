@@ -12,8 +12,10 @@ struct AddRecipeView: View {
     @ObservedObject var viewModel: AddRecipeViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var isShowingImagePicker = false
+    @State private var isShowingStepImagePicker = false
     @State private var showingIngredientPicker = false
     @State private var selectedIngredientIndex: Int = 0
+    @State private var selectedStepIndex: Int = 0
 
     init(auth: AuthModel) {
         viewModel = AddRecipeViewModel(auth: auth)
@@ -93,19 +95,91 @@ struct AddRecipeView: View {
                     }
                 }
                 Section(header: Text("Directions")) {
-                    ForEach(viewModel.procedures.indices, id:\.self) { index in
-                        Text("Step \(index + 1)")
-                        TextEditor(text: $viewModel.procedures[index])
-                    }
-                    Button(action: {
-                        viewModel.addProcedure()
-                    }) {
-                        HStack{
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(Color.green)
-                            Text("Add Procedure")
-                                .padding(.horizontal)
+                    VStack {
+                        ForEach($viewModel.newSteps, id: \.stepNumber) { $step in
+                            HStack {
+                                Button(action: {
+                                    viewModel.newStepImages.remove(at: step.stepNumber-1)
+                                    viewModel.newSteps = viewModel.newSteps.filter() {$0 != step}
+                                    viewModel.recalculateSteps()
+                                }) {
+                                    Image(systemName: "minus.circle.fill")
+                                        .foregroundColor(Color.red)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .contentShape(Circle())
+                                VStack {
+                                    Text("Step " + String(step.stepNumber))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .font(.title3)
+
+                                    TextField("Description", text: $step.description, axis: .vertical)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .textFieldStyle(.roundedBorder)
+                                        .foregroundColor(Color(.darkGray))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 7.0)
+                                                .stroke(step.description.isEmpty ? Color.red : Color.clear, lineWidth: 1.0)
+                                        )
+                                }
+                                
+                                Button(action: {
+                                    selectedStepIndex = step.stepNumber - 1
+                                    isShowingStepImagePicker = true
+                                }) {
+                                    if let image = viewModel.newStepImages[step.stepNumber - 1] {
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 120, height: 120)
+                                            .cornerRadius(10)
+                                            .overlay(
+                                                Group {
+                                                    Color.black.opacity(0.3)
+                                                        .aspectRatio(contentMode: .fill)
+                                                        .frame(width: 120, height: 120)
+                                                        .cornerRadius(10)
+                                                    Image(systemName: "photo")
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .foregroundColor(.white)
+                                                        .opacity(0.5)
+                                                        .frame(width: 50, height: 50)
+                                                }
+                                            )
+                                    } else {
+                                        ZStack {
+                                            Image(systemName: "photo")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 50, height: 50)
+                                                .cornerRadius(10)
+                                                .foregroundColor(Color.blue)
+                                        }
+                                        .frame(width: 120, height: 120)
+                                    }
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .contentShape(Rectangle())
+                            }
                         }
+                        
+                        
+                        Button(action: {
+                            viewModel.newSteps.append(RecipeModel.Step(stepNumber: viewModel.newSteps.count+1, description: ""))
+                            viewModel.newStepImages.append(nil)
+                        }) {
+                            HStack{
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundColor(Color.green)
+                                Text("Add step")
+                                    .padding(.horizontal)
+                                    .foregroundColor(Color.blue)
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .contentShape(Rectangle())
                     }
                 }
                 Section(header: Text("Categories")){
@@ -137,6 +211,9 @@ struct AddRecipeView: View {
             }
             .sheet(isPresented: $isShowingImagePicker) {
                 ImagePicker(image: $viewModel.image)
+            }
+            .sheet(isPresented: $isShowingStepImagePicker) {
+                ImagePicker(image: $viewModel.newStepImages[selectedStepIndex])
             }
             .overlay(
                 Group {

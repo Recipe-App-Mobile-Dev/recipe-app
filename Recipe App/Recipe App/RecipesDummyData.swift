@@ -133,49 +133,4 @@ class RecipesDummyData {
      )
     
     public static var recipes: [RecipeModel] = [ToastRecipe, SmoothieRecipe, SaladRecipe]
-    
-    static func addDataToFirebase() {
-        var rep = RecipesRepository()
-        
-        var NewSmoothieRecipe: NewRecipeModel = NewRecipeModel(
-             userId: "8t4KSPZAvzclXoCzBpOQZifge0m2",
-             recipeName: "Green Smoothie _ delete later",
-             recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
-             ingredients: [
-                RecipeModel.RecipeIngridient(
-                    ingredient: Ingredient(ingredientName: "Banana", imageName: "banana.jpeg"),
-                    quantity: "1 whole"
-                ),
-                RecipeModel.RecipeIngridient(
-                    ingredient: Ingredient(ingredientName: "Pineapple", imageName: "pineapple.jpeg"),
-                    quantity: "1 cup"
-                ),
-                RecipeModel.RecipeIngridient(
-                    ingredient: Ingredient(ingredientName: "Coconut water", imageName: "coconutwater.jpeg"),
-                    quantity: "1 cup"
-                )
-             ],
-             steps: [
-                 NewRecipeModel.Step(
-                     stepNumber: 1,
-                     description: "Place all ingredients in a blender.",
-                     stepImage: "banana.jpeg"
-                 ),
-                 NewRecipeModel.Step(
-                     stepNumber: 2,
-                     description: "Blend on high until smooth.",
-                     stepImage: "smoothie.jpeg"
-                 )
-             ],
-             categories: [.drink]
-        )
-        
-        rep.addRecipe(recipe: NewSmoothieRecipe) { (ingredient, error) in
-            if let error = error {
-                print("Error while fetching the user profile: \(error)")
-                return
-            }
-        }
-
-    }
 }
