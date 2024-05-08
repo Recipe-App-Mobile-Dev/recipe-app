@@ -112,7 +112,7 @@ struct IngredientPickerView: View {
                                     )
                                 Button(action: { addIngredient() }) {
                                     Text("Save")
-                                        .padding()
+                                        .padding(.all, 10.0)
                                         .background(Color.blue)
                                         .foregroundColor(.white)
                                         .cornerRadius(10)
@@ -147,8 +147,8 @@ struct IngredientPickerView: View {
     }
     
     func addIngredient() {
-        isLoading = true
         if let image = newImage, newIngredientName != "" {
+            isLoading = true
             imagesRepository.uploadImage(folder: "ingredients", image: image) { url in
                 if let url = url {
                     let newIngredient = Ingredient(ingredientName: newIngredientName, imageName: url)
