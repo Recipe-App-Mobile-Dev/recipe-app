@@ -59,7 +59,8 @@ struct JustRecipeView: View {
                             .font(.title2)
                             .padding(.bottom, 10.0)
                         
-                        ForEach(Array(ingredients), id: \.ingredient.id) { recipeIngredient in
+                        ForEach(ingredients.indices, id: \.self) { index in
+                            let recipeIngredient = ingredients[index]
                             IngredientView(ingredient: recipeIngredient.ingredient, quantity: recipeIngredient.quantity)
                                 .padding(.vertical, 3.0)
                         }
