@@ -25,8 +25,8 @@ struct StepView: View {
                     .foregroundColor(Color(.darkGray))
             }
             
-            if let stepHasImage = step.stepImage {
-                LoadImageView(imageName: "recipesteps/\(recipeId)/" + stepHasImage)
+            if let stepHasImage = step.stepImage, stepHasImage != "" {
+                LoadImageView(imageName: stepHasImage)
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 120, height: 120)
                     .cornerRadius(10)

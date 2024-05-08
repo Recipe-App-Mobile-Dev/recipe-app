@@ -59,7 +59,7 @@ class AddRecipeViewModel: ObservableObject {
             recipeDescription: description,
             ingredients: ingredientRows.map { ingredient in NewRecipeModel.RecipeIngridient(ingredient: NewIngredient(ingredientName: ingredient.ingredient, image: ingredient.image), quantity: ingredient.quantity) },
             steps: procedures.enumerated().map { index, stepDescription in
-                NewRecipeModel.Step(stepNumber: index, description: stepDescription)
+                NewRecipeModel.Step(stepNumber: index + 1, description: stepDescription)
             },
             categories: selectedCategories
         )

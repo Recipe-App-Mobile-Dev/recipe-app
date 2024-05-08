@@ -9,16 +9,14 @@ import Foundation
 import SwiftUI
 
 struct ProfileEditView: View {
+    @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: ProfileEditViewModel
     @State private var showingImagePicker = false
-    @Environment(\.presentationMode) var presentationMode
-    @Binding var path: NavigationPath
     var authModel: AuthModel
 
-    init(authModel: AuthModel, path: Binding<NavigationPath>) {
+    init(authModel: AuthModel) {
         _viewModel = StateObject(wrappedValue: ProfileEditViewModel(profile: authModel.profile))
         self.authModel = authModel
-        _path = path
     }
     
     var body: some View {
@@ -64,10 +62,6 @@ struct ProfileEditView: View {
 
 struct ProfileEditView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileEditView(authModel: AuthModel(testProfile: true),
-        path: Binding<NavigationPath>(
-            get: { return NavigationPath() },
-            set: { _ in }
-        ))
+        ProfileEditView(authModel: AuthModel(testProfile: true))
     }
 }
