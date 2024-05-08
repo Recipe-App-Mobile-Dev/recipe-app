@@ -41,19 +41,14 @@ class RecipeEditViewModel: ObservableObject {
     }
     
     func saveChanges(completion: @escaping (_ done: Bool, _ message: String?) -> Void) {
-        // Check if editing steps and ingredients are valid
         guard self.editingSteps.count > 0, self.editingSteps.allSatisfy({ !$0.description.isEmpty }),
               self.editingIngredients.count > 0, self.editingIngredients.allSatisfy({ !$0.quantity.isEmpty }) else {
             completion(false, "Please check you filled in all fields")
             return
         }
 
-        // Upload image if editingMainImage exists
-//        if let image = editingMainImage {
-//            imagesRepository.uploadImage(folder: "recipes", image: image) { imageURL in
         self.uploadImages() { done, error in
             if !done {
-                // Handle error
                 completion(false, error)
                 return
             }
@@ -73,10 +68,8 @@ class RecipeEditViewModel: ObservableObject {
 
             self.recipesRepository.updateRecipe(recipeId: self.editingRecipeId, recipe: updatedRecipe) { done, error in
                 if done {
-                    //self.reloadRecipe(recipe: self.editingRecipe)
                     completion(true, nil)
                 } else {
-                    // Handle error
                     completion(false, "Recipe updating error")
                 }
             }
@@ -84,15 +77,14 @@ class RecipeEditViewModel: ObservableObject {
     }
     
     func uploadImages(completion: @escaping (_ done: Bool, _ message: String?) -> Void) {
-        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+        let dispatchGroup = DispatchGroup()
         if let image = editingMainImage {
-            dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+            dispatchGroup.enter()
             imagesRepository.uploadImage(folder: "recipes", image: image) { imageURL in
                 defer {
-                    dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                    dispatchGroup.leave()
                 }
                 guard let imageURL = imageURL else {
-                    // Handle error
                     completion(false, "Main image cannot be saved")
                     return
                 }
@@ -103,13 +95,12 @@ class RecipeEditViewModel: ObservableObject {
         
         for i in 0..<editingStepImages.count {
             if let image = editingStepImages[i] {
-                dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                dispatchGroup.enter()
                 imagesRepository.uploadImage(folder: "recipesteps/\(editingRecipeId)", image: image) { imageURL in
                     defer {
-                        dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                        dispatchGroup.leave()
                     }
                     guard let imageURL = imageURL else {
-                        // Handle error
                         completion(false, "Image for step \(i+1) cannot be saved")
                         return
                     }

@@ -15,7 +15,7 @@ class RecipesRepository: ObservableObject {
     
     
     func reloadRecipe(recipeId: String, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
-        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+        let dispatchGroup = DispatchGroup()
         db.collection("recipes").document(recipeId).getDocument { document, error in
             guard error == nil else {
                 print("error getting recipes", error ?? "")
@@ -42,10 +42,10 @@ class RecipesRepository: ObservableObject {
                             recipe.categories = enumCategories
                         }
                         
-                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        dispatchGroup.enter()
                         self.fetchRecipeRating(recipeId: document.documentID) { rating, error in
                             defer {
-                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                                dispatchGroup.leave()
                             }
                             
                             guard error == nil else {
@@ -59,10 +59,10 @@ class RecipesRepository: ObservableObject {
                         }
                         
                         var steps: [RecipeModel.Step]? = []
-                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        dispatchGroup.enter()
                         self.fetchSteps(recipeId: document.documentID) { (recipeSteps, error) in
                             defer {
-                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                                dispatchGroup.leave()
                             }
                             
                             if let error = error {
@@ -73,10 +73,10 @@ class RecipesRepository: ObservableObject {
                         }
                         
                         var ingredients: [RecipeModel.RecipeIngridient]?
-                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        dispatchGroup.enter()
                         self.fetchRecipeIngredients(recipeId: document.documentID) { (recipeIngredients, error) in
                             defer {
-                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                                dispatchGroup.leave()
                             }
                             
                             if let error = error {
@@ -86,7 +86,6 @@ class RecipesRepository: ObservableObject {
                             ingredients = recipeIngredients
                         }
                         
-                        // Notify when all asynchronous calls inside the DispatchGroup have completed
                         dispatchGroup.notify(queue: .main) {
                             if let ingredients = ingredients, let steps = steps {
                                 recipe.ingredients = ingredients
@@ -195,29 +194,13 @@ class RecipesRepository: ObservableObject {
         let recipeRef = db.collection("recipes").document(recipeId)
         recipeRef.updateData(["steps": FieldValue.arrayUnion([docRef.documentID])]) { error in
             if let error = error {
-                print("Error updating document: \(error)")
+                print("Error updating step: \(error)")
             }
         }
         
         completion(recipeStep, nil)
     }
     
-    
-//    func addRecipeIngredient(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
-//        if let image = recipeIngredient.ingredient.image, let imageData = image.jpegData(compressionQuality: 0.8) {
-//            let storageRef = Storage.storage().reference().child("ingredient_images").child("\(UUID().uuidString).jpg")
-//            
-//            storageRef.putData(imageData, metadata: nil) { metadata, error in
-//                guard let _ = metadata else {
-//                    completion(nil, error)
-//                    return
-//                }
-//            }
-//            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: storageRef.fullPath, completion: completion)
-//        } else {
-//            self.addIngredientDocument(recipeId: recipeId, recipeIngredient: recipeIngredient, imageUrl: nil, completion: completion)
-//        }
-//    }
     
     func addRecipeIngredient(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
         if let image = recipeIngredient.ingredient.image, let imageData = image.jpegData(compressionQuality: 0.8) {
@@ -257,7 +240,7 @@ class RecipesRepository: ObservableObject {
             let recipeRef = db.collection("recipes").document(recipeId)
             recipeRef.updateData(["ingredients": FieldValue.arrayUnion([docRefRecipeIngredient.documentID])]) { error in
                 if let error = error {
-                    print("Error updating document: \(error)")
+                    print("Error updating ingredient: \(error)")
                 }
             }
             
@@ -319,7 +302,7 @@ class RecipesRepository: ObservableObject {
         
         let docRef = db.collection(recipeIngredientsPath).addDocument(data: data) { error in
             if let error = error {
-                print("Error adding document: \(error)")
+                print("Error adding rating: \(error)")
                 return
             }
             
@@ -329,7 +312,7 @@ class RecipesRepository: ObservableObject {
     
     
     func fetchRecipes(completion: @escaping (_ recipe: [RecipeModel]?, _ error: Error?) -> Void) {
-        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+        let dispatchGroup = DispatchGroup()
         db.collection("recipes").getDocuments() { (querySnapshot, error) in
             guard error == nil else {
                 print("error getting recipes", error ?? "")
@@ -358,10 +341,10 @@ class RecipesRepository: ObservableObject {
                             recipe.categories = enumCategories
                         }
                         
-                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        dispatchGroup.enter()
                         self.fetchRecipeRating(recipeId: document.documentID) { rating, error in
                             defer {
-                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                                dispatchGroup.leave()
                             }
                             
                             guard error == nil else {
@@ -387,7 +370,7 @@ class RecipesRepository: ObservableObject {
     
     
     func fetchUserRecipes(userId: String, completion: @escaping (_ recipe: [RecipeModel]?, _ error: Error?) -> Void) {
-        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+        let dispatchGroup = DispatchGroup()
         db.collection("recipes").whereField("userId", isEqualTo: userId).getDocuments { (querySnapshot, error) in
             guard let querySnapshot = querySnapshot, error == nil else {
                 print("Error getting recipes: \(error?.localizedDescription ?? "")")
@@ -416,10 +399,10 @@ class RecipesRepository: ObservableObject {
                             recipe.categories = enumCategories
                         }
                         
-                        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                        dispatchGroup.enter()
                         self.fetchRecipeRating(recipeId: document.documentID) { rating, error in
                             defer {
-                                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                                dispatchGroup.leave()
                             }
                             
                             guard error == nil else {
@@ -445,13 +428,13 @@ class RecipesRepository: ObservableObject {
     
     
     func fetchRecipeInfo(forRecipe: RecipeModel, completion: @escaping (_ recipe: RecipeModel?, _ error: Error?) -> Void) {
-        let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+        let dispatchGroup = DispatchGroup()
         
         var steps: [RecipeModel.Step]? = []
-        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+        dispatchGroup.enter()
         self.fetchSteps(recipeId: forRecipe.id) { (recipeSteps, error) in
             defer {
-                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                dispatchGroup.leave()
             }
             
             if let error = error {
@@ -462,10 +445,10 @@ class RecipesRepository: ObservableObject {
         }
                 
         var ingredients: [RecipeModel.RecipeIngridient]?
-        dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+        dispatchGroup.enter()
         self.fetchRecipeIngredients(recipeId: forRecipe.id) { (recipeIngredients, error) in
             defer {
-                dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                dispatchGroup.leave()
             }
             
             if let error = error {
@@ -475,7 +458,6 @@ class RecipesRepository: ObservableObject {
             ingredients = recipeIngredients
         }
                 
-        // Notify when all asynchronous calls inside the DispatchGroup have completed
         dispatchGroup.notify(queue: .main) {
             if let ingredients = ingredients, let steps = steps {
                 var recipe = forRecipe
@@ -491,7 +473,7 @@ class RecipesRepository: ObservableObject {
         let recipeIngredientsPath = "recipes/" + recipeId + "/rating"
         db.collection(recipeIngredientsPath).getDocuments() { (querySnapshot, error) in
             guard error == nil else {
-                print("error getting recipe ingredient", error ?? "")
+                print("error getting recipe rating", error ?? "")
                 return
             }
             
@@ -518,7 +500,7 @@ class RecipesRepository: ObservableObject {
         let recipeIngredientsPath = "recipes/" + recipeId + "/steps"
         db.collection(recipeIngredientsPath).getDocuments() { (querySnapshot, error) in
             guard error == nil else {
-                print("error getting recipe ingredient", error ?? "")
+                print("error getting recipe steps", error ?? "")
                 return
             }
             
@@ -539,20 +521,20 @@ class RecipesRepository: ObservableObject {
         let recipeIngredientsPath = "recipes/" + recipeId + "/RecipeIngridient"
         db.collection(recipeIngredientsPath).getDocuments() { (querySnapshot, error) in
             guard error == nil else {
-                print("error getting recipe ingredient", error ?? "")
+                print("error getting recipe ingredients", error ?? "")
                 return
             }
             
             var ingredientArray: [RecipeModel.RecipeIngridient] = []
             
-            let dispatchGroup = DispatchGroup() // Create a DispatchGroup to wait for all asynchronous calls
+            let dispatchGroup = DispatchGroup()
             
             for document in querySnapshot!.documents {
                 if let ingredientId = document["ingredient"] as? String ?? nil {
-                    dispatchGroup.enter() // Enter the DispatchGroup before making an asynchronous call
+                    dispatchGroup.enter()
                     self.fetchIngrediets(ingredientId: ingredientId) { (ingredient, error) in
                         defer {
-                            dispatchGroup.leave() // Leave the DispatchGroup after the asynchronous call completes
+                            dispatchGroup.leave()
                         }
                         
                         if let error = error {
@@ -572,7 +554,6 @@ class RecipesRepository: ObservableObject {
                 }
             }
             
-            // Notify when all asynchronous calls inside the DispatchGroup have completed
             dispatchGroup.notify(queue: .main) {
                 completion(ingredientArray, error)
             }
@@ -780,7 +761,7 @@ class RecipesRepository: ObservableObject {
         
         let docRef = db.collection("recipes").document(recipeId).delete { error in
             if let error = error {
-                print("Error deleting document: \(error)")
+                print("Error deleting recipe: \(error)")
                 completion(error)
             }
         }
@@ -790,21 +771,17 @@ class RecipesRepository: ObservableObject {
     
     func deleteCollection(collectionName: String, batchSize: Int = 100, completion: @escaping (Error?) -> Void) {
         let collectionRef = db.collection(collectionName)
-        // Get the documents in the collection
         collectionRef.getDocuments { snapshot, error in
             guard let snapshot = snapshot else {
                 completion(error)
                 return
             }
             
-            // Create a batch operation
             let batch = collectionRef.firestore.batch()
             
-            // Iterate over the documents in batches and delete them
             snapshot.documents.enumerated().forEach { index, document in
                 batch.deleteDocument(document.reference)
                 
-                // Commit the batch after every batchSize documents
                 if index % batchSize == (batchSize - 1) || index == snapshot.documents.count - 1 {
                     batch.commit { batchError in
                         if let batchError = batchError {

@@ -55,11 +55,6 @@ struct ProfileView: View {
                     Button("Log Out") {
                         authModel.signOut()
                     }
-                    
-                    Button("TEST add dummy recipe") {
-                        RecipesDummyData.addDataToFirebase()
-                    }
-                    .padding()
                 }
             }
             .navigationTitle("Profile")

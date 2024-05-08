@@ -22,10 +22,6 @@ struct RecipesView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .bottomTrailing) {
                     ScrollView {
-                        Button("TEST add dummy recipe") {
-                            RecipesDummyData.addDataToFirebase()
-                        }
-                        
                         VStack(spacing: 20) {
                             ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
                                 NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
@@ -49,12 +45,12 @@ struct RecipesView: View {
                     .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height, alignment: .bottomTrailing)
                     
                 }
-                .navigationBarTitle("App Name", displayMode: .inline)
+                .navigationBarTitle("Recipe App", displayMode: .inline)
                 .navigationBarItems(
                     leading: NavigationLink(destination: ProfileView(authModel: authModel)) {
                         Image(systemName: "person")
                     },
-                    trailing: NavigationLink(destination: SearchView()) {
+                    trailing: NavigationLink(destination: SearchView(recipes: fetchedRecipes, auth: authModel)) {
                         Image(systemName: "magnifyingglass")
                     }
                 )
