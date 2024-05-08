@@ -25,7 +25,7 @@ class AddRecipeViewModel: ObservableObject {
     @Published var selectedIngredientIndex = 0
     @Published var procedures: [String] = []
     @Published var selectedCategories: [Category] = []
-    @Published var ingredientRows: [IngredientData] = []
+    @Published var newIngredients: [RecipeModel.RecipeIngridient] = []
     var onSaveCompleted: (() -> Void)?
     
     init(auth: AuthModel) {
@@ -44,11 +44,6 @@ class AddRecipeViewModel: ObservableObject {
         }
     }
     
-    func addIngredientRow() {
-        let newRow = IngredientData(image: nil, ingredient: "", quantity: "")
-        ingredientRows.append(newRow)
-    }
-    
     func saveRecipe() {
         let rep = RecipesRepository()
         
@@ -57,7 +52,7 @@ class AddRecipeViewModel: ObservableObject {
             recipeName: name,
             imageName: image,
             recipeDescription: description,
-            ingredients: ingredientRows.map { ingredient in NewRecipeModel.RecipeIngridient(ingredient: NewIngredient(ingredientName: ingredient.ingredient, image: ingredient.image), quantity: ingredient.quantity) },
+            ingredients: newIngredients,
             steps: procedures.enumerated().map { index, stepDescription in
                 NewRecipeModel.Step(stepNumber: index + 1, description: stepDescription)
             },

@@ -14,8 +14,3 @@ struct Ingredient: Hashable, Codable {
     var ingredientName: String
     var imageName: String
 }
-
-struct NewIngredient {
-    var ingredientName: String
-    var image: UIImage?
-}

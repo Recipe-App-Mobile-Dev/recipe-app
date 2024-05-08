@@ -12,7 +12,7 @@ struct AddRecipeView: View {
     @ObservedObject var viewModel: AddRecipeViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var isShowingImagePicker = false
-    @State private var isShowingIngredientImagePicker = false
+    @State private var showingIngredientPicker = false
     @State private var selectedIngredientIndex: Int = 0
 
     init(auth: AuthModel) {
@@ -48,30 +48,49 @@ struct AddRecipeView: View {
                     }
                 }
                 Section(header: Text("Ingredients")) {
-                    ForEach(viewModel.ingredientRows.indices, id: \.self) { rowIndex in
-                        HStack {
+                    VStack {
+                        ForEach($viewModel.newIngredients, id: \.ingredient.id) { $recipeIngredient in
+                            HStack {
+                                Button(action: {
+                                    viewModel.newIngredients = viewModel.newIngredients.filter() {$0 != recipeIngredient}
+                                }) {
+                                    Image(systemName: "minus.circle.fill")
+                                        .foregroundColor(Color.red)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .contentShape(Circle())
+                                IngredientView(ingredient: recipeIngredient.ingredient)
+                                Spacer()
+                                TextField("Quantity", text: $recipeIngredient.quantity, axis: .vertical)
+                                    .frame(width: UIScreen.main.bounds.width * 0.3)
+                                    .textFieldStyle(.roundedBorder)
+                                    .foregroundColor(Color(.darkGray))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 7.0)
+                                            .stroke(recipeIngredient.quantity.isEmpty ? Color.red : Color.clear, lineWidth: 1.0)
+                                    )
+                            }
+                            .padding(.vertical, 3.0)
+                        }
+                        
+                        HStack{
                             Button(action: {
-                                selectedIngredientIndex = rowIndex
-                                isShowingIngredientImagePicker = true
+                                showingIngredientPicker = true
                             }) {
-                                if let image = viewModel.ingredientRows[rowIndex].image {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 50, height: 50)
-                                } else {
-                                    Image(systemName: "photo.on.rectangle.angled")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 50, height: 50)
-                                        .foregroundColor(.blue)
+                                HStack{
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundColor(Color.green)
+                                    Text("Add ingredient")
+                                        .padding(.horizontal)
+                                        .foregroundColor(Color.blue)
                                 }
                             }
-                            TextField("Ingredient Name", text: $viewModel.ingredientRows[rowIndex].ingredient)
-                            TextField("Amount", text: $viewModel.ingredientRows[rowIndex].quantity)
+                            .buttonStyle(PlainButtonStyle())
+                            .contentShape(Rectangle())
+
+                            Spacer()
                         }
                     }
-                    Button("Add Ingredient", action: viewModel.addIngredientRow)
                 }
                 Section(header: Text("Directions")) {
                     ForEach(viewModel.procedures.indices, id:\.self) { index in
@@ -81,7 +100,12 @@ struct AddRecipeView: View {
                     Button(action: {
                         viewModel.addProcedure()
                     }) {
-                        Text("Add Procedure")
+                        HStack{
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(Color.green)
+                            Text("Add Procedure")
+                                .padding(.horizontal)
+                        }
                     }
                 }
                 Section(header: Text("Categories")){
@@ -104,7 +128,6 @@ struct AddRecipeView: View {
                     }
                 }
             }
-            .navigationTitle("New Recipe")
             .toolbar {
                 ToolbarItem(placement: .bottomBar) {
                    Button("Done") {
@@ -115,9 +138,22 @@ struct AddRecipeView: View {
             .sheet(isPresented: $isShowingImagePicker) {
                 ImagePicker(image: $viewModel.image)
             }
-            .sheet(isPresented: $isShowingIngredientImagePicker) {
-                ImagePicker(image: $viewModel.ingredientRows[selectedIngredientIndex].image)
-            }
+            .overlay(
+                Group {
+                    if showingIngredientPicker {
+                        Group {
+                            Color.black.opacity(0.3)
+                                .edgesIgnoringSafeArea(.all)
+                                .onTapGesture {
+                                    showingIngredientPicker = false
+                                }
+                            IngredientPickerView(pickedIngredients: $viewModel.newIngredients, showingIngredientPicker: $showingIngredientPicker)
+                        }
+                    } else {
+                        EmptyView()
+                    }
+                }
+            )
             .onAppear {
                 viewModel.onSaveCompleted = {
                     presentationMode.wrappedValue.dismiss()

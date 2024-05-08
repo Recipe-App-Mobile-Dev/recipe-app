@@ -142,16 +142,16 @@ class RecipesDummyData {
              recipeName: "Green Smoothie _ delete later",
              recipeDescription: "A refreshing blend of banana, pineapple, and coconut water for a vibrant start to your day.",
              ingredients: [
-                NewRecipeModel.RecipeIngridient(
-                    ingredient: NewIngredient(ingredientName: "Banana"),
+                RecipeModel.RecipeIngridient(
+                    ingredient: Ingredient(ingredientName: "Banana", imageName: "banana.jpeg"),
                     quantity: "1 whole"
                 ),
-                NewRecipeModel.RecipeIngridient(
-                    ingredient: NewIngredient(ingredientName: "Pineapple"),
+                RecipeModel.RecipeIngridient(
+                    ingredient: Ingredient(ingredientName: "Pineapple", imageName: "pineapple.jpeg"),
                     quantity: "1 cup"
                 ),
-                NewRecipeModel.RecipeIngridient(
-                    ingredient: NewIngredient(ingredientName: "Coconut water"),
+                RecipeModel.RecipeIngridient(
+                    ingredient: Ingredient(ingredientName: "Coconut water", imageName: "coconutwater.jpeg"),
                     quantity: "1 cup"
                 )
              ],
@@ -169,24 +169,6 @@ class RecipesDummyData {
              ],
              categories: [.drink]
         )
-        
-//        var ingredients = [
-//            Ingredient(id: "4", ingredientName: "Banana", imageName: "banana.jpeg"),
-//            Ingredient(id: "5", ingredientName: "Pineapple", imageName: "pineapple.jpeg"),
-//            Ingredient(id: "6", ingredientName: "Coconut water", imageName: "coconutwater.jpeg"),
-//            Ingredient(id: "7", ingredientName: "Pasta", imageName: "pasta.jpeg"),
-//            Ingredient(id: "8", ingredientName: "Cucumbers", imageName: "cucumber.jpeg"),
-//            Ingredient(id: "9", ingredientName: "Vinaigrette", imageName: "vinaigrette.jpeg")
-//        ]
-//        
-//        for ingredient in ingredients {
-//            rep.addIngredient(ingredient: ingredient) { (ingredient, error) in
-//                if let error = error {
-//                    print("Error while fetching the user profile: \(error)")
-//                    return
-//                }
-//            }
-//        }
         
         rep.addRecipe(recipe: NewSmoothieRecipe) { (ingredient, error) in
             if let error = error {
