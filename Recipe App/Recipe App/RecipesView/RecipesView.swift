@@ -73,8 +73,7 @@ struct LazyView<Content: View>: View {
 struct RecipesView_Previews: PreviewProvider {
     static var previews: some View {
         RecipesView(
-            test: true,
-            authModel: AuthModel()
-        )
+            test: false,
+            authModel: AuthModel(testProfile: true)        )
     }
 }

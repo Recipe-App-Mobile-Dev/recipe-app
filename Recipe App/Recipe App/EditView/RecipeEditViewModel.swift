@@ -133,6 +133,5 @@ class RecipeEditViewModel: ObservableObject {
         for i in 0..<editingSteps.count {
             editingSteps[i].stepNumber = i+1
         }
-        
     }
 }

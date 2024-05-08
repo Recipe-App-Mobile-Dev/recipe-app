@@ -102,7 +102,7 @@ class RecipesRepository: ObservableObject {
     }
     
     
-    func addRecipe(recipe: NewRecipeModel, completion: @escaping (_ recipe: NewRecipeModel?, _ error: Error?) -> Void) {
+    func addRecipe(recipe: NewRecipeModel, newStepImages: [UIImage?], completion: @escaping (_ recipe: NewRecipeModel?, _ error: Error?) -> Void) {
         let collectionRef = db.collection("recipes")
         
         let dateFormatter = DateFormatter()
@@ -124,14 +124,14 @@ class RecipesRepository: ObservableObject {
                     return
                 }
                 
-                self.addRecipeToFirestore(recipe: recipe, imageUrl: storageRef.fullPath, dateString: dateString, stringCategories: stringCategories, completion: completion)
+                self.addRecipeToFirestore(recipe: recipe, imageUrl: storageRef.fullPath, dateString: dateString, stringCategories: stringCategories, newStepImages: newStepImages, completion: completion)
             }
         } else {
-            self.addRecipeToFirestore(recipe: recipe, imageUrl: nil, dateString: dateString, stringCategories: stringCategories, completion: completion)
+            self.addRecipeToFirestore(recipe: recipe, imageUrl: nil, dateString: dateString, stringCategories: stringCategories, newStepImages: newStepImages, completion: completion)
         }
     }
     
-    private func addRecipeToFirestore(recipe: NewRecipeModel, imageUrl: String?, dateString: String, stringCategories: [String]?, completion: @escaping (_ recipe: NewRecipeModel?, _ error: Error?) -> Void) {
+    private func addRecipeToFirestore(recipe: NewRecipeModel, imageUrl: String?, dateString: String, stringCategories: [String]?, newStepImages: [UIImage?], completion: @escaping (_ recipe: NewRecipeModel?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
             "userId": recipe.userId,
             "recipeName": recipe.recipeName,
@@ -152,12 +152,10 @@ class RecipesRepository: ObservableObject {
 
                 
         if let steps = recipe.steps {
-            for step in steps {
-                self.addRecipeStep(recipeId: docRef.documentID, recipeStep: step) { (step, error) in
-                    if let error = error {
-                        print("Error adding recipe steps: \(error)")
-                        return
-                    }
+            self.addRecipeSteps(recipeId: docRef.documentID, recipeSteps: steps, newStepImages: newStepImages) { (error) in
+                if let error = error {
+                    print("Error adding recipe steps: \(error)")
+                    return
                 }
             }
         }
@@ -174,29 +172,68 @@ class RecipesRepository: ObservableObject {
         completion(recipe, nil)
     }
     
-    
-    func addRecipeStep(recipeId: String, recipeStep: NewRecipeModel.Step, completion: @escaping (_ recipeStep: NewRecipeModel.Step?, _ error: Error?) -> Void) {
-        let data: [String: Any] = [
-            "stepNumber": recipeStep.stepNumber,
-            "description": recipeStep.description,
-            "stepImage": recipeStep.stepImage ?? nil
-        ]
-        
-        let docRef = db.collection("recipes/\(recipeId)/steps").addDocument(data: data) { error in
+    func addRecipeSteps(recipeId: String, recipeSteps: [RecipeModel.Step], newStepImages: [UIImage?], completion: @escaping (_ error: Error?) -> Void) {
+        let storageRef = Storage.storage().reference()
+        let stepsCollection = Firestore.firestore().collection("recipes/\(recipeId)/steps")
+
+        stepsCollection.getDocuments { snapshot, error in
             if let error = error {
-                print("Error adding step: \(error)")
+                completion(error)
                 return
             }
-        }
-        
-        let recipeRef = db.collection("recipes").document(recipeId)
-        recipeRef.updateData(["steps": FieldValue.arrayUnion([docRef.documentID])]) { error in
-            if let error = error {
-                print("Error updating step: \(error)")
+
+            snapshot?.documents.forEach { document in
+                stepsCollection.document(document.documentID).delete()
+            }
+
+            let dispatchGroup = DispatchGroup()
+
+            for (index, step) in recipeSteps.enumerated() {
+                dispatchGroup.enter()
+                
+                let imageName = "step\(index + 1).jpg"
+                let imagePath = "recipesteps/\(recipeId)/\(imageName)"
+                let imageRef = storageRef.child(imagePath)
+
+                if let image = newStepImages[index], let imageData = image.jpegData(compressionQuality: 0.8) {
+                    imageRef.putData(imageData, metadata: nil) { metadata, error in
+                        guard let metadata = metadata else {
+                            dispatchGroup.leave()
+                            return
+                        }
+                        
+                        var stepData: [String: Any] = [
+                            "stepNumber": step.stepNumber,
+                            "description": step.description,
+                            "stepImage": imageName
+                        ]
+                        
+                        stepsCollection.addDocument(data: stepData) { error in
+                            if let error = error {
+                                completion(error)
+                            }
+                            dispatchGroup.leave()
+                        }
+                    }
+                } else {
+                    let stepData: [String: Any] = [
+                        "stepNumber": step.stepNumber,
+                        "description": step.description,
+                        "stepImage": ""
+                    ]
+                    stepsCollection.addDocument(data: stepData) { error in
+                        if let error = error {
+                            completion(error)
+                        }
+                        dispatchGroup.leave()
+                    }
+                }
+            }
+
+            dispatchGroup.notify(queue: .main) {
+                completion(nil)
             }
         }
-        
-        completion(recipeStep, nil)
     }
     
     func addRecipeIngredient(recipeId: String, recipeIngredients: [RecipeModel.RecipeIngridient], completion: @escaping (_ error: Error?) -> Void) {

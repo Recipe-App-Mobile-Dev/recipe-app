@@ -38,12 +38,6 @@ struct NewRecipeModel {
     var imageName: UIImage?
     var recipeDescription: String
     var ingredients: [RecipeModel.RecipeIngridient]? = nil
-    var steps: [Step]?
+    var steps: [RecipeModel.Step]? = nil
     var categories: [Category]?
-    
-    struct Step: Codable, Hashable {
-        var stepNumber: Int
-        var description: String
-        var stepImage: String?
-    }
 }
