@@ -7,106 +7,82 @@
 
 import Foundation
 import SwiftUI
-struct Recipe: Identifiable {
-    var id = UUID()
-    var name: String
-    var category: String
-    var rating: Int
-    var time: String
-}
+
 struct SearchView: View {
-    @ObservedObject var searchModel: SearchModel
+    @ObservedObject var searchViewModel: SearchViewModel
+    @ObservedObject var auth: AuthModel
     
-    let categories = ["All", "Cereal", "Vegetables", "Dinner", "Chinese", "Local Dish", "Fruit", "Breakfast", "Spanish", "Italian", "Lunch"]
-    
-    init() {
-        self.searchModel = SearchModel()
+    init(recipes: [RecipeModel], auth: AuthModel) {
+        self.auth = auth
+        self.searchViewModel = SearchViewModel(recipes: recipes)
     }
     
     var body: some View {
-        NavigationView {
-            VStack {
+        VStack {
+            Spacer()
+            
+            Text("Search")
+                .font(.title)
+                .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
+            
+            Spacer()
+            
+            HStack {
+                Text("Sorting")
                 Spacer()
-                
-                Text("Search")
-                    .font(.title)
-                    .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
-                
-                Spacer()
-                
-                HStack {
-                    Text("Time")
-                    Spacer()
-                }
-                Picker(selection: $searchModel.selectedTimeFilter, label: Text("")) {
-                    Text("All").tag("All")
-                    Text("Newest").tag("Newest")
-                    Text("Oldest").tag("Oldest")
-                    Text("Popularity").tag("Popularity")
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                
-                HStack {
-                    Text("Rate")
-                    Spacer()
-                }
-                Picker(selection: $searchModel.selectedRatingFilter, label: Text("")) {
-                    Text("All").tag("All")
-                    ForEach(1...5, id: \.self) { rating in
-                        Text("\(rating)★").tag("\(rating)")
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                
-                HStack {
-                    Text("Category")
-                    Spacer()
-                }
-                Picker(selection: $searchModel.selectedCategoryFilter, label: Text("")) {
-                    ForEach(categories, id: \.self) { category in
-                        Text(category)
-                    }
-                }
-                .pickerStyle(WheelPickerStyle())
-                .padding()
-                
-                HStack {
-                    Text("Name")
-                    Spacer()
-                }
-                TextField("Search by Name", text: $searchModel.searchText)
-                    .padding()
-                
-                Spacer()
-                
-                NavigationLink(destination: FilteredRecipesView(searchModel: searchModel)) {
-                    Text("Filter")
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(Color.white)
-                        .cornerRadius(10)
-                }
-                .padding()
             }
-            .navigationTitle("")
-            .navigationBarHidden(true) // Hide the default navigation bar
+            Picker(selection: $searchViewModel.selectedTimeFilter, label: Text("")) {
+                Text("All").tag("All")
+                Text("Newest").tag("Newest")
+                Text("Oldest").tag("Oldest")
+                Text("Popularity").tag("Popularity")
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding()
+            
+            HStack {
+                Text("Rating")
+                Spacer()
+            }
+            Picker(selection: $searchViewModel.selectedRatingFilter, label: Text("")) {
+                Text("All").tag("All")
+                ForEach(1...5, id: \.self) { rating in
+                    Text("\(rating)★").tag("\(rating)")
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding()
+            
+            HStack {
+                Text("Category")
+                Spacer()
+            }
+            Picker(selection: $searchViewModel.selectedCategoryFilter, label: Text("")) {
+                Text("All").tag(nil as Category?)
+                ForEach(Category.allCases, id: \.self) { category in
+                    Text(category.rawValue).tag(category as Category?)
+                }
+            }
+            .pickerStyle( WheelPickerStyle())
+            .padding()
+            
+            CustomTextField(label: "Recipe Name", placeHolder: "Search by Name", text: $searchViewModel.searchText)
+                .padding()
+            
+            Spacer()
+            
+            NavigationLink(destination: FilteredRecipesView(searchViewModel: searchViewModel, auth: auth)) {
+                ButtonView(text: "Filter", color: Color.blue)
+            }
         }
+        .navigationTitle("")
+        .padding()
     }
 }
-struct FilteredRecipesView: View {
-    @ObservedObject var searchModel: SearchModel
-    
-    var body: some View {
-        List(searchModel.filterRecipes()) { recipe in
-            Text(recipe.name)
-        }
-        .navigationTitle("Filtered Recipes")
-    }
-}
+
+
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
-        return SearchView()
+        return SearchView(recipes: RecipesDummyData.recipes, auth: AuthModel(testProfile: true))
     }
 }

@@ -52,7 +52,6 @@ class RecipeViewModel: ObservableObject {
             } else {
                 DispatchQueue.main.async {
                     self.recipe = recipe
-                    print("2", self.recipe?.recipeDescription ?? "no")
                 }
             }
         }
