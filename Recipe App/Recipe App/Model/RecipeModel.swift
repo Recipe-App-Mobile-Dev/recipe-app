@@ -37,14 +37,9 @@ struct NewRecipeModel {
     var recipeName: String
     var imageName: UIImage?
     var recipeDescription: String
-    var ingredients: [RecipeIngridient]?
+    var ingredients: [RecipeModel.RecipeIngridient]? = nil
     var steps: [Step]?
     var categories: [Category]?
-    
-    struct RecipeIngridient  {
-        var ingredient: NewIngredient
-        var quantity: String
-    }
     
     struct Step: Codable, Hashable {
         var stepNumber: Int

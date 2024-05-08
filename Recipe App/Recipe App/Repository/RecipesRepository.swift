@@ -161,14 +161,12 @@ class RecipesRepository: ObservableObject {
                 }
             }
         }
-        
+                
         if let ingredients = recipe.ingredients {
-            for ingredient in ingredients {
-                self.addRecipeIngredient(recipeId: docRef.documentID, recipeIngredient: ingredient) { (ingredient, error) in
-                    if let error = error {
-                        print("Error adding recipe ingredients: \(error)")
-                        return
-                    }
+            self.addRecipeIngredient(recipeId: docRef.documentID, recipeIngredients: ingredients) { error in
+                if let error = error {
+                    print("Error adding recipe ingredients: \(error)")
+                    return
                 }
             }
         }
@@ -201,54 +199,37 @@ class RecipesRepository: ObservableObject {
         completion(recipeStep, nil)
     }
     
-    
-    func addRecipeIngredient(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
-        if let image = recipeIngredient.ingredient.image, let imageData = image.jpegData(compressionQuality: 0.8) {
-            let storageRef = Storage.storage().reference().child("ingredient_images").child("\(UUID().uuidString).jpg")
+    func addRecipeIngredient(recipeId: String, recipeIngredients: [RecipeModel.RecipeIngridient], completion: @escaping (_ error: Error?) -> Void) {
+        let ingredientsCollection = db.collection("recipes/\(recipeId)/RecipeIngridient")
+        
+        ingredientsCollection.getDocuments { snapshot, error in
+            if let error = error {
+                completion(error)
+                return
+            }
             
-            storageRef.putData(imageData, metadata: nil) { metadata, error in
-                guard let _ = metadata else {
-                    completion(nil, error)
-                    return
+            snapshot?.documents.forEach { document in
+                ingredientsCollection.document(document.documentID).delete()
+            }
+            
+            for ingredient in recipeIngredients {
+                let data: [String: Any] = [
+                    "ingredient": ingredient.ingredient.id,
+                    "quantity": ingredient.quantity
+                ]
+                
+                ingredientsCollection.addDocument(data: data) { error in
+                    if let error = error {
+                        completion(error)
+                    }
                 }
             }
             
-            let ingredient: [String: Any] = [
-                "ingredientName": recipeIngredient.ingredient.ingredientName,
-                "imageName": storageRef.fullPath
-            ]
-            
-            let docRefIngredient = db.collection("ingredients").addDocument(data: ingredient) { error in
-                if let error = error {
-                    completion(nil, error)
-                    return
-                }
-            }
-            
-            let addRecipeIngredient: [String: Any] = [
-                "ingredient": docRefIngredient.documentID,
-                "quantity": recipeIngredient.quantity
-            ]
-            
-            let docRefRecipeIngredient = db.collection("recipes/\(recipeId)/RecipeIngridient").addDocument(data: addRecipeIngredient) { error in
-                if let error = error {
-                    print("Error adding ingredient: \(error)")
-                    return
-                }
-            }
-            
-            let recipeRef = db.collection("recipes").document(recipeId)
-            recipeRef.updateData(["ingredients": FieldValue.arrayUnion([docRefRecipeIngredient.documentID])]) { error in
-                if let error = error {
-                    print("Error updating ingredient: \(error)")
-                }
-            }
-            
-            completion(recipeIngredient, nil)
+            completion(nil)
         }
     }
 
-    private func addIngredientDocument(recipeId: String, recipeIngredient: NewRecipeModel.RecipeIngridient, imageUrl: String?, completion: @escaping (_ recipeIngredient: NewRecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
+    private func addIngredientDocument(recipeId: String, recipeIngredient: RecipeModel.RecipeIngridient, imageUrl: String?, completion: @escaping (_ recipeIngredient: RecipeModel.RecipeIngridient?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "ingredientName": recipeIngredient.ingredient.ingredientName,
             "quantity": recipeIngredient.quantity
