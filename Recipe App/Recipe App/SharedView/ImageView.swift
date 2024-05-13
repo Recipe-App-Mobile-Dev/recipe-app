@@ -11,7 +11,7 @@ import SwiftUI
 struct LoadImageView: View {
     let imageName: String
     let defaultImage: Image
-    let reloadTrigger: Bool // Property to observe for triggering image reload
+    let reloadTrigger: Bool 
     @State private var isLoading = true
     @State private var loadedImage: Image?
     var imagesRepository = ImagesRepository()
@@ -37,7 +37,6 @@ struct LoadImageView: View {
             loadImage()
         }
         .onChange(of: reloadTrigger) { _ in
-            // Reload images when reloadTrigger changes
             loadImage()
         }
     }
