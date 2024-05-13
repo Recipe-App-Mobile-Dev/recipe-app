@@ -23,7 +23,7 @@ struct RecipeView: View {
         if let fetchedRecipe = viewModel.recipe {
             if isEditing == false {
                 VStack {
-                    JustRecipeView(recipe: Binding.constant(fetchedRecipe), profile: viewModel.userProfile)
+                    JustRecipeView(recipe: Binding.constant(fetchedRecipe),  isRefreshing: $viewModel.isRefreshing, profile: viewModel.userProfile)
                         .navigationTitle(fetchedRecipe.recipeName)
                     
                     if viewModel.authModel.profile.uid == fetchedRecipe.userId {
@@ -95,7 +95,14 @@ struct RecipeView: View {
                         }
                     }
                 }
-                .onAppear{ viewModel.reloadRecipe(recipe: viewModel.recipe!) }
+                .refreshable {
+                    viewModel.isRefreshing = true
+                    await viewModel.reloadRecipe()
+                }
+                .task {
+                    viewModel.isRefreshing = true
+                    await viewModel.reloadRecipe()
+                }
             } else {
                 EditRecipeView(recipe: Binding.constant(fetchedRecipe), isEditing: $isEditing)
                     .navigationTitle("Editing " + fetchedRecipe.recipeName)

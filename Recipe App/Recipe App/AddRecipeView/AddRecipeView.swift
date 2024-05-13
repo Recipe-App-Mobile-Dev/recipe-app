@@ -16,6 +16,8 @@ struct AddRecipeView: View {
     @State private var showingIngredientPicker = false
     @State private var selectedIngredientIndex: Int = 0
     @State private var selectedStepIndex: Int = 0
+    @State private var isSaving: Bool = false
+    @State var saveAlert = false
 
     init(auth: AuthModel) {
         viewModel = AddRecipeViewModel(auth: auth)
@@ -48,6 +50,9 @@ struct AddRecipeView: View {
                             Spacer()
                         }
                     }
+                }
+                Section(header: Text("Description")) {
+                    TextField("Recipe Description", text: $viewModel.description)
                 }
                 Section(header: Text("Ingredients")) {
                     VStack {
@@ -205,7 +210,12 @@ struct AddRecipeView: View {
             .toolbar {
                 ToolbarItem(placement: .bottomBar) {
                    Button("Done") {
-                       viewModel.saveRecipe()
+                       if viewModel.newSteps.count > 0, viewModel.newSteps.allSatisfy({ !$0.description.isEmpty }), viewModel.newIngredients.count > 0, viewModel.newIngredients.allSatisfy({ !$0.quantity.isEmpty }), viewModel.image != nil, viewModel.name != "" {
+                           isSaving = true
+                           viewModel.saveRecipe()
+                       } else {
+                           saveAlert = true
+                       }
                     }
                 }
             }
@@ -233,10 +243,31 @@ struct AddRecipeView: View {
             )
             .onAppear {
                 viewModel.onSaveCompleted = {
+                    isSaving = false
                     presentationMode.wrappedValue.dismiss()
                 }
             }
         }
+        .alert(isPresented: $saveAlert) {
+            Alert(
+                title: Text("Error saving recipe"),
+                message: Text("Please fill in all the recipe details"),
+                dismissButton: .cancel()
+            )
+        }
+        .overlay(
+            Group {
+                if isSaving {
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                        .overlay(
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .foregroundColor(.white)
+                        )
+                }
+            }
+        )
     }
 }
         

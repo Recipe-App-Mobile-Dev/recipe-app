@@ -11,12 +11,14 @@ import SwiftUI
 struct LoadImageView: View {
     let imageName: String
     let defaultImage: Image
+    let reloadTrigger: Bool // Property to observe for triggering image reload
     @State private var isLoading = true
     @State private var loadedImage: Image?
     var imagesRepository = ImagesRepository()
     
-    init(imageName: String, defaultImage: Image = Image("defaultImage")) {
+    init(imageName: String, reloadTrigger: Bool = false, defaultImage: Image = Image("defaultImage")) {
         self.imageName = imageName
+        self.reloadTrigger = reloadTrigger
         self.defaultImage = defaultImage
     }
 
@@ -34,9 +36,14 @@ struct LoadImageView: View {
         .onAppear {
             loadImage()
         }
+        .onChange(of: reloadTrigger) { _ in
+            // Reload images when reloadTrigger changes
+            loadImage()
+        }
     }
     
     func loadImage() {
+        isLoading = true
         imagesRepository.getImage(name: imageName) { image in
             DispatchQueue.main.async {
                 loadedImage = image // Update the loaded image

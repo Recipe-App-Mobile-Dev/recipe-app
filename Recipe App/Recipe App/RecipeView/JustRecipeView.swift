@@ -10,13 +10,14 @@ import SwiftUI
 
 struct JustRecipeView: View {
     @Binding var recipe: RecipeModel
+    @Binding var isRefreshing: Bool
     @State var profile: UserProfile?
     
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
                 ZStack {
-                    LoadImageView(imageName: recipe.imageName)
+                    LoadImageView(imageName: recipe.imageName, reloadTrigger: isRefreshing)
                         .aspectRatio(contentMode: .fill)
                         .frame(width: geometry.size.width - 40, height: 300)
                         .cornerRadius(10)
@@ -59,9 +60,8 @@ struct JustRecipeView: View {
                             .font(.title2)
                             .padding(.bottom, 10.0)
                         
-                        ForEach(ingredients.indices, id: \.self) { index in
-                            let recipeIngredient = ingredients[index]
-                            IngredientView(ingredient: recipeIngredient.ingredient, quantity: recipeIngredient.quantity)
+                        ForEach(ingredients, id: \.self) { recipeIngredient in
+                            IngredientView(ingredient: recipeIngredient.ingredient, quantity: .constant(recipeIngredient.quantity))
                                 .padding(.vertical, 3.0)
                         }
                     }
@@ -76,7 +76,7 @@ struct JustRecipeView: View {
                             .padding(.bottom, 10.0)
                         
                         ForEach(steps.sorted(by: { $0.stepNumber < $1.stepNumber }), id: \.stepNumber) { step in
-                            StepView(recipeId: recipe.id, step: step)
+                            StepView(recipeId: recipe.id, step: .constant(step), isRefreshing: $isRefreshing)
                                 .padding(.bottom, 10.0)
                         }
                     }
@@ -93,6 +93,10 @@ struct JustRecipeView: View {
                 get: { return RecipesDummyData.ToastRecipe },
                 set: { _ in }
             ),
+        isRefreshing: Binding<Bool> (
+            get: { return false },
+            set: { _ in }
+        ),
         profile: AuthModel(testProfile: true).profile
     )
 }

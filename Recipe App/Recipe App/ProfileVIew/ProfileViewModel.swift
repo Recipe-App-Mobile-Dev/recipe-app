@@ -10,6 +10,7 @@ import Foundation
 class ProfileViewModel: ObservableObject {
     @Published var recipes: [RecipeModel]?
     @Published var profile: UserProfile?
+    @Published var isRefreshing = false
     private var recipesRepository = RecipesRepository()
     private var profileRepository = UserProfileRepository()
     
@@ -17,19 +18,24 @@ class ProfileViewModel: ObservableObject {
         if let testData = test, testData == true {
             self.recipes = RecipesDummyData.recipes
         } else {
-            fetchUserRecipes(userId: userId)
+            Task {
+                await fetchUserRecipes(userId: userId)
+            }
         }
         fetchUserProfile(userId: userId)
     }
     
-    func fetchUserRecipes(userId: String) {
+    func fetchUserRecipes(userId: String) async {
         recipesRepository.fetchUserRecipes(userId: userId) { [weak self] recipes, error in
             guard let self = self else { return }
             if let error = error {
                 print("Error while fetching the recipes: \(error)")
                 return
             } else {
-                self.recipes = recipes
+                DispatchQueue.main.async {
+                    self.recipes = recipes
+                    self.isRefreshing = false
+                }
             }
         }
     }
