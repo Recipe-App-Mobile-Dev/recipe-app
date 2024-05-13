@@ -110,7 +110,11 @@ struct IngredientPickerView: View {
                                         RoundedRectangle(cornerRadius: 7.0)
                                             .stroke(newIngredientName.isEmpty ? Color.red : Color.clear, lineWidth: 1.0)
                                     )
-                                Button(action: { addIngredient() }) {
+                                Button(action: {
+                                    addIngredient()
+                                    newImage = nil
+                                    newIngredientName = ""
+                                }) {
                                     Text("Save")
                                         .padding(.all, 10.0)
                                         .background(Color.blue)
