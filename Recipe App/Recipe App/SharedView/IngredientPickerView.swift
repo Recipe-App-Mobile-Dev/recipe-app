@@ -51,6 +51,8 @@ struct IngredientPickerView: View {
                         if !adding {
                             Button(action: {
                                 adding = true
+                                newImage = nil
+                                newIngredientName = ""
                             }) {
                                 HStack{
                                     Image(systemName: "plus.circle.fill")
@@ -112,8 +114,6 @@ struct IngredientPickerView: View {
                                     )
                                 Button(action: {
                                     addIngredient()
-                                    newImage = nil
-                                    newIngredientName = ""
                                 }) {
                                     Text("Save")
                                         .padding(.all, 10.0)
