@@ -10,10 +10,11 @@ import SwiftUI
 
 struct RecipeCardView: View {
     var recipe: RecipeModel
+    @Binding var isRefreshing: Bool
     
     var body: some View {
         ZStack {
-            LoadImageView(imageName: recipe.imageName)
+            LoadImageView(imageName: recipe.imageName, reloadTrigger: isRefreshing)
                 .aspectRatio(contentMode: .fill)
                 .frame(height: 200)
                 .clipped()
@@ -45,6 +46,11 @@ struct RecipeCardView: View {
 struct RecipeCard_Previews: PreviewProvider {
     static var previews: some View {
         var recipe = RecipesDummyData.ToastRecipe
-        RecipeCardView(recipe: recipe)
+        RecipeCardView(recipe: recipe,
+                       isRefreshing: Binding<Bool> (
+                           get: { return false },
+                           set: { _ in }
+                       )
+        )
     }
 }

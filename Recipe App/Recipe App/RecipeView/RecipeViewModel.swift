@@ -18,6 +18,7 @@ class RecipeViewModel: ObservableObject {
     @Published var isRated: Int = 0
     @Published var deletionAlert: Bool = false
     @Published var ratingAlert: Bool = false
+    @Published var isRefreshing = false
     
     private var recipesRepository = RecipesRepository()
     private var usersRepository = UserProfileRepository()
@@ -43,15 +44,20 @@ class RecipeViewModel: ObservableObject {
     }    
     
     
-    func reloadRecipe(recipe: RecipeModel) {
+    func reloadRecipe() async {
+        guard let recipe = self.recipe else {
+            return
+        }
         recipesRepository.reloadRecipe(recipeId: recipe.id) { [weak self] recipe, error in
             guard let self = self else { return }
             if let error = error {
                 print("Error while fetching the recipe: \(error)")
+                self.isRefreshing = false
                 return
             } else {
                 DispatchQueue.main.async {
                     self.recipe = recipe
+                    self.isRefreshing = false
                 }
             }
         }

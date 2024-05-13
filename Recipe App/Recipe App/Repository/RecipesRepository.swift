@@ -205,7 +205,7 @@ class RecipesRepository: ObservableObject {
                         var stepData: [String: Any] = [
                             "stepNumber": step.stepNumber,
                             "description": step.description,
-                            "stepImage": imageName
+                            "stepImage": imagePath
                         ]
                         
                         stepsCollection.addDocument(data: stepData) { error in

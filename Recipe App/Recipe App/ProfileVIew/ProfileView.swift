@@ -44,7 +44,7 @@ struct ProfileView: View {
                         VStack(spacing: 20) {
                             ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
                                 NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
-                                    RecipeCardView(recipe: recipe)
+                                    RecipeCardView(recipe: recipe, isRefreshing: $viewModel.isRefreshing)
                                 }
                             }
                         }
@@ -58,8 +58,15 @@ struct ProfileView: View {
                 }
             }
             .navigationTitle("Profile")
+            .refreshable {
+                viewModel.isRefreshing = true
+                await viewModel.fetchUserRecipes(userId: authModel.profile.uid)
+            }
+            .task {
+                viewModel.isRefreshing = true
+                await viewModel.fetchUserRecipes(userId: authModel.profile.uid)
+            }
             .onAppear {
-                viewModel.fetchUserRecipes(userId: authModel.profile.uid)
                 viewModel.fetchUserProfile(userId: authModel.profile.uid)
             }
         }

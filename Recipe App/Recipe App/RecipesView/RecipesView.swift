@@ -25,7 +25,7 @@ struct RecipesView: View {
                         VStack(spacing: 20) {
                             ForEach(fetchedRecipes.sorted(by: { $0.dateCreated > $1.dateCreated }), id: \.id) { recipe in
                                 NavigationLink(destination: LazyView(RecipeView(recipe: recipe, auth: authModel))) {
-                                    RecipeCardView(recipe: recipe)
+                                    RecipeCardView(recipe: recipe, isRefreshing: $viewModel.isRefreshing)
                                 }
                             }
                         }
@@ -54,7 +54,14 @@ struct RecipesView: View {
                         Image(systemName: "magnifyingglass")
                     }
                 )
-                .onAppear { viewModel.fetchRecipes() }
+                .refreshable {
+                    viewModel.isRefreshing = true
+                    await viewModel.fetchRecipes()
+                }
+                .task {
+                    viewModel.isRefreshing = true
+                    await viewModel.fetchRecipes()
+                }
             }
         }
     }

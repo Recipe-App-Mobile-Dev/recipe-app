@@ -10,7 +10,12 @@ import SwiftUI
 
 struct IngredientView: View {
     @State var ingredient: Ingredient
-    @State var quantity: String?
+    @Binding var quantity: String?
+    
+    init(ingredient: Ingredient, quantity: Binding<String?> = .constant(nil)) {
+        self.ingredient = ingredient
+        _quantity = quantity
+    }
     
     var body: some View {
         HStack {
@@ -32,6 +37,9 @@ struct IngredientView: View {
 #Preview {
     IngredientView(
         ingredient: Ingredient(id: "1", ingredientName: "tomatoes", imageName: "Tomato"),
-        quantity: "500g"
+        quantity: Binding<String?> (
+            get: { return "500g" },
+            set: { _ in }
+        )
     )
 }
